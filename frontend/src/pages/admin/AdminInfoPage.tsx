@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // useNavigate를 import
-import NavBar from './AdminNavBar';
+import { useNavigate } from 'react-router-dom'; 
+import NavBar from './components/AdminNavBar';
+
 
 interface Notice {
   userId: number;
