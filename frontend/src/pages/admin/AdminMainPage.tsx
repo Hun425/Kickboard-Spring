@@ -19,12 +19,29 @@ const AdminMain: React.FC = () => {
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [sortField, setSortField] = useState<keyof Report | null>(null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(
+    null
+  );
 
   const statusItems = [
-    { label: '신고접수', count: 10, colorClass: 'bg-red-500', value: '신고접수' },
-    { label: '수거중', count: 10, colorClass: 'bg-yellow-500', value: '수거중' },
-    { label: '수거완료', count: 10, colorClass: 'bg-green-500', value: '수거완료' },
+    {
+      label: '신고접수',
+      count: 10,
+      colorClass: 'bg-red-500',
+      value: '신고접수',
+    },
+    {
+      label: '수거중',
+      count: 10,
+      colorClass: 'bg-yellow-500',
+      value: '수거중',
+    },
+    {
+      label: '수거완료',
+      count: 10,
+      colorClass: 'bg-green-500',
+      value: '수거완료',
+    },
   ];
 
   const companies = ['BEAM', 'DEER', 'SWING', 'KICK GOING', 'LIME'];
@@ -55,7 +72,8 @@ const AdminMain: React.FC = () => {
       latitude: 35.1595 + (Math.random() - 0.5) * 0.01,
       longitude: 126.8526 + (Math.random() - 0.5) * 0.01,
       address: addresses[index % addresses.length],
-      adminStatus: adminStatuses[Math.floor(Math.random() * adminStatuses.length)],
+      adminStatus:
+        adminStatuses[Math.floor(Math.random() * adminStatuses.length)],
       images: [beam],
       createdAt: new Date(
         Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
@@ -73,7 +91,8 @@ const AdminMain: React.FC = () => {
       afterImages: reports
         .filter((report) => report.adminStatus === '수거완료')
         .map(
-          (report) => `/api/placeholder/400/320?text=Completed${report.reportId}`
+          (report) =>
+            `/api/placeholder/400/320?text=Completed${report.reportId}`
         ),
       error: undefined,
     };
@@ -254,7 +273,9 @@ const AdminMain: React.FC = () => {
                       <tr>
                         <TableHeader field="createdAt">신고 일시</TableHeader>
                         <TableHeader field="companyName">업체명</TableHeader>
-                        <TableHeader field="serialNumber">시리얼 번호</TableHeader>
+                        <TableHeader field="serialNumber">
+                          시리얼 번호
+                        </TableHeader>
                         <TableHeader field="address">주소</TableHeader>
                         <TableHeader field="adminStatus">처리 상태</TableHeader>
                       </tr>

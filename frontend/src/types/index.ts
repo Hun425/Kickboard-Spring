@@ -11,7 +11,13 @@ export interface Report {
   latitude: number;
   longitude: number;
   address: string;
-  adminStatus: "신고접수" | "수거요청" | "처리전" | "처리중" | "처리완료" | "수거완료";
+  adminStatus:
+    | '신고접수'
+    | '수거요청'
+    | '처리전'
+    | '처리중'
+    | '처리완료'
+    | '수거완료';
   images: string[];
   createdAt: string;
   content?: string;

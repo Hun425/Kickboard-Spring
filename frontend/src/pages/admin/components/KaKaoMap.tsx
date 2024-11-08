@@ -7,7 +7,11 @@ interface Props {
   onSelectReport: (report: Report) => void;
 }
 
-const KakaoMap: React.FC<Props> = ({ selectedReport, reports, onSelectReport }) => {
+const KakaoMap: React.FC<Props> = ({
+  selectedReport,
+  reports,
+  onSelectReport,
+}) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<any>(null);
   const [markers, setMarkers] = useState<any[]>([]);
@@ -20,11 +24,11 @@ const KakaoMap: React.FC<Props> = ({ selectedReport, reports, onSelectReport }) 
   const statusOptions = ['전체', '신고접수', '수거중', '수거완료'];
 
   const companyColors: { [key: string]: string } = {
-    'BEAM': '#FF6B6B',    
-    'DEER': '#4ECDC4',    
-    'SWING': '#45B7D1',   
-    'KICK GOING': '#96CEB4', 
-    'LIME': '#26A69A'     
+    BEAM: '#FF6B6B',
+    DEER: '#4ECDC4',
+    SWING: '#45B7D1',
+    'KICK GOING': '#96CEB4',
+    LIME: '#26A69A',
   };
 
   const getStatusIcon = (status: string) => {
@@ -53,7 +57,7 @@ const KakaoMap: React.FC<Props> = ({ selectedReport, reports, onSelectReport }) 
     const markerSize = new window.kakao.maps.Size(24, 35);
     const markerShape = {
       coords: [12, 34, 1, 21, 1, 12, 6, 4, 18, 4, 23, 12, 23, 21, 12, 34],
-      type: 'poly'
+      type: 'poly',
     };
 
     return {
@@ -64,19 +68,19 @@ const KakaoMap: React.FC<Props> = ({ selectedReport, reports, onSelectReport }) 
         </svg>
       `)}`,
       size: markerSize,
-      shape: markerShape
+      shape: markerShape,
     };
   };
 
   const handleStatusToggle = (status: string) => {
-    setSelectedStatuses(prev => {
+    setSelectedStatuses((prev) => {
       if (status === '전체') {
         return ['전체'];
       }
-      
-      const newStatuses = prev.filter(s => s !== '전체');
+
+      const newStatuses = prev.filter((s) => s !== '전체');
       if (prev.includes(status)) {
-        const filteredStatuses = newStatuses.filter(s => s !== status);
+        const filteredStatuses = newStatuses.filter((s) => s !== status);
         return filteredStatuses.length === 0 ? ['전체'] : filteredStatuses;
       } else {
         return [...newStatuses, status];
@@ -88,19 +92,25 @@ const KakaoMap: React.FC<Props> = ({ selectedReport, reports, onSelectReport }) 
     if (selectedStatuses.includes('전체')) {
       return reports;
     }
-    return reports.filter(report => selectedStatuses.includes(report.adminStatus));
+    return reports.filter((report) =>
+      selectedStatuses.includes(report.adminStatus)
+    );
   };
 
   const updateCenterAddress = (map: any) => {
     const geocoder = new window.kakao.maps.services.Geocoder();
     const center = map.getCenter();
-    
-    geocoder.coord2Address(center.getLng(), center.getLat(), (result: any, status: any) => {
-      if (status === window.kakao.maps.services.Status.OK) {
-        const addr = result[0].address;
-        setCenterAddress(addr.address_name);
+
+    geocoder.coord2Address(
+      center.getLng(),
+      center.getLat(),
+      (result: any, status: any) => {
+        if (status === window.kakao.maps.services.Status.OK) {
+          const addr = result[0].address;
+          setCenterAddress(addr.address_name);
+        }
       }
-    });
+    );
   };
 
   useEffect(() => {
@@ -113,7 +123,8 @@ const KakaoMap: React.FC<Props> = ({ selectedReport, reports, onSelectReport }) 
     script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_MAP_KEY}&libraries=services&autoload=false`;
     script.async = true;
 
-    const onScriptError = () => console.error('Failed to load Kakao Maps script');
+    const onScriptError = () =>
+      console.error('Failed to load Kakao Maps script');
     script.addEventListener('error', onScriptError);
     document.head.appendChild(script);
 
@@ -127,14 +138,17 @@ const KakaoMap: React.FC<Props> = ({ selectedReport, reports, onSelectReport }) 
         };
 
         const newMap = new window.kakao.maps.Map(mapRef.current, options);
-        
+
         const filterControl = document.createElement('div');
-        filterControl.className = 'absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm p-3 border-t border-gray-200 z-10';
+        filterControl.className =
+          'absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm p-3 border-t border-gray-200 z-10';
         filterControl.innerHTML = `
           <div class="max-w-3xl mx-auto">
             <div class="flex flex-col space-y-3">
               <div class="flex flex-wrap gap-2 justify-center">
-                ${statusOptions.map(status => `
+                ${statusOptions
+                  .map(
+                    (status) => `
                   <button
                     class="filter-btn px-4 py-1.5 rounded-full text-sm transition-colors ${
                       selectedStatuses.includes(status)
@@ -145,7 +159,9 @@ const KakaoMap: React.FC<Props> = ({ selectedReport, reports, onSelectReport }) 
                   >
                     ${status}
                   </button>
-                `).join('')}
+                `
+                  )
+                  .join('')}
               </div>
              
             </div>
@@ -159,10 +175,10 @@ const KakaoMap: React.FC<Props> = ({ selectedReport, reports, onSelectReport }) 
             const status = target.getAttribute('data-status');
             if (status) {
               handleStatusToggle(status);
-              
+
               // 버튼 스타일 업데이트
               const allButtons = filterControl.querySelectorAll('.filter-btn');
-              allButtons.forEach(btn => {
+              allButtons.forEach((btn) => {
                 const btnStatus = btn.getAttribute('data-status');
                 if (btnStatus === '전체' && status === '전체') {
                   btn.classList.remove('bg-gray-200', 'text-gray-700');
@@ -185,7 +201,7 @@ const KakaoMap: React.FC<Props> = ({ selectedReport, reports, onSelectReport }) 
         });
 
         mapRef.current.appendChild(filterControl);
-        
+
         window.kakao.maps.event.addListener(newMap, 'idle', () => {
           updateCenterAddress(newMap);
         });
@@ -205,28 +221,31 @@ const KakaoMap: React.FC<Props> = ({ selectedReport, reports, onSelectReport }) 
   useEffect(() => {
     if (!map) return;
 
-    markers.forEach(marker => marker.setMap(null));
-    infowindows.forEach(infowindow => infowindow.close());
+    markers.forEach((marker) => marker.setMap(null));
+    infowindows.forEach((infowindow) => infowindow.close());
 
     const filteredReports = getFilteredReports();
     const newMarkers: any[] = [];
     const newInfowindows: any[] = [];
 
-    filteredReports.forEach(report => {
+    filteredReports.forEach((report) => {
       const position = new window.kakao.maps.LatLng(
         report.latitude,
         report.longitude
       );
 
       const markerImage = new window.kakao.maps.MarkerImage(
-        createMarkerImage(companyColors[report.companyName] || '#FF0000', report.adminStatus).src,
+        createMarkerImage(
+          companyColors[report.companyName] || '#FF0000',
+          report.adminStatus
+        ).src,
         new window.kakao.maps.Size(24, 35)
       );
 
       const marker = new window.kakao.maps.Marker({
         position,
         map,
-        image: markerImage
+        image: markerImage,
       });
 
       const infowindow = new window.kakao.maps.InfoWindow({
@@ -235,11 +254,11 @@ const KakaoMap: React.FC<Props> = ({ selectedReport, reports, onSelectReport }) 
             <p class="font-bold">${report.address}</p>
             <p>${report.companyName}</p>
           </div>
-        `
+        `,
       });
 
       window.kakao.maps.event.addListener(marker, 'click', () => {
-        newInfowindows.forEach(w => w.close());
+        newInfowindows.forEach((w) => w.close());
         infowindow.open(map, marker);
         onSelectReport(report);
       });
@@ -259,7 +278,7 @@ const KakaoMap: React.FC<Props> = ({ selectedReport, reports, onSelectReport }) 
       selectedReport.latitude,
       selectedReport.longitude
     );
-    
+
     map.setCenter(position);
 
     markers.forEach((marker, index) => {
@@ -278,16 +297,18 @@ const KakaoMap: React.FC<Props> = ({ selectedReport, reports, onSelectReport }) 
   }, [map, selectedReport, markers, infowindows]);
   return (
     <div className="w-full space-y-4">
-      <div ref={mapRef} className="w-full h-[400px] rounded-lg relative" />
-      
+      <div ref={mapRef} className="relative h-[400px] w-full rounded-lg" />
+
       {/* 회사 범례 */}
-      <div className="bg-white p-4 rounded-lg shadow-sm">
-       
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+      <div className="rounded-lg bg-white p-4 shadow-sm">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
           {Object.entries(companyColors).map(([company, color]) => (
-            <div key={company} className="flex items-center gap-2 justify-center">
-              <div 
-                className="w-4 h-4 rounded-full" 
+            <div
+              key={company}
+              className="flex items-center justify-center gap-2"
+            >
+              <div
+                className="h-4 w-4 rounded-full"
                 style={{ backgroundColor: color }}
               />
               <span className="text-sm text-gray-600">{company}</span>
@@ -298,8 +319,8 @@ const KakaoMap: React.FC<Props> = ({ selectedReport, reports, onSelectReport }) 
 
       {/* 현재 주소 표시 */}
       <div className="flex items-center justify-center">
-        <div className="bg-white px-4 py-2 rounded-lg shadow-sm text-center">
-          <p className="text-gray-900 font-medium">{centerAddress}</p>
+        <div className="rounded-lg bg-white px-4 py-2 text-center shadow-sm">
+          <p className="font-medium text-gray-900">{centerAddress}</p>
         </div>
       </div>
     </div>

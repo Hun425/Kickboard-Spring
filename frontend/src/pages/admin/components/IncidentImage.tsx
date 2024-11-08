@@ -10,15 +10,15 @@ const IncidentImage: React.FC<Props> = ({ imageUrl, isLoading }) => {
   return (
     <div className="overflow-hidden rounded-lg">
       {isLoading ? (
-        <Skeleton className="w-full h-[400px]" />
+        <Skeleton className="h-[400px] w-full" />
       ) : imageUrl ? (
         <img
           src={imageUrl}
           alt="Incident"
-          className="w-full h-[400px] object-cover"
+          className="h-[400px] w-full object-cover"
         />
       ) : (
-        <div className="w-full h-[200px] flex items-center justify-center text-gray-500 bg-gray-100">
+        <div className="flex h-[200px] w-full items-center justify-center bg-gray-100 text-gray-500">
           이미지가 없습니다
         </div>
       )}

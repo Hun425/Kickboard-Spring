@@ -25,11 +25,11 @@ interface SelectProps {
   className?: string;
 }
 
-export const Select: React.FC<SelectProps> = ({ 
-  value, 
-  onValueChange, 
-  children, 
-  className = ''
+export const Select: React.FC<SelectProps> = ({
+  value,
+  onValueChange,
+  children,
+  className = '',
 }) => {
   const [open, setOpen] = useState(false);
 
@@ -52,8 +52,10 @@ export const Select: React.FC<SelectProps> = ({
   }, [open]);
 
   return (
-    <SelectContext.Provider value={{ open, setOpen, value, onChange: onValueChange }}>
-      <div className={`relative inline-block select-container ${className}`}>
+    <SelectContext.Provider
+      value={{ open, setOpen, value, onChange: onValueChange }}
+    >
+      <div className={`select-container relative inline-block ${className}`}>
         {children}
       </div>
     </SelectContext.Provider>
@@ -66,10 +68,10 @@ interface SelectTriggerProps {
   placeholder?: string;
 }
 
-export const SelectTrigger: React.FC<SelectTriggerProps> = ({ 
-  children, 
+export const SelectTrigger: React.FC<SelectTriggerProps> = ({
+  children,
   className = '',
-  placeholder = '선택하세요'
+  placeholder = '선택하세요',
 }) => {
   const { open, setOpen, value } = useSelectContext();
 
@@ -77,24 +79,14 @@ export const SelectTrigger: React.FC<SelectTriggerProps> = ({
     <button
       type="button"
       onClick={() => setOpen(!open)}
-      className={`
-        w-full flex items-center justify-between gap-2 px-3 py-2 
-        text-sm bg-white border rounded-lg 
-        hover:bg-gray-50 
-        focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-        transition-colors duration-200 ease-in-out
-        ${open ? 'ring-2 ring-blue-500 border-blue-500' : ''}
-        ${className}
-      `}
+      className={`flex w-full items-center justify-between gap-2 rounded-lg border bg-white px-3 py-2 text-sm transition-colors duration-200 ease-in-out hover:bg-gray-50 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${open ? 'border-blue-500 ring-2 ring-blue-500' : ''} ${className} `}
     >
-      <span className="truncate">
-        {children || value || placeholder}
-      </span>
-      <svg 
-        className={`w-4 h-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} 
-        fill="none" 
-        strokeWidth="2" 
-        stroke="currentColor" 
+      <span className="truncate">{children || value || placeholder}</span>
+      <svg
+        className={`h-4 w-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+        fill="none"
+        strokeWidth="2"
+        stroke="currentColor"
         viewBox="0 0 24 24"
       >
         <path d="M19 9l-7 7-7-7" />
@@ -108,28 +100,19 @@ interface SelectContentProps {
   className?: string;
 }
 
-export const SelectContent: React.FC<SelectContentProps> = ({ 
-  children, 
-  className = '' 
+export const SelectContent: React.FC<SelectContentProps> = ({
+  children,
+  className = '',
 }) => {
   const { open } = useSelectContext();
 
   if (!open) return null;
 
   return (
-    <div 
-      className={`
-        absolute z-50 w-full mt-1 
-        bg-white border rounded-lg shadow-lg 
-        overflow-hidden max-h-60 overflow-y-auto
-        transform opacity-100 scale-100
-        transition-all duration-200 ease-out
-        ${className}
-      `}
+    <div
+      className={`absolute z-50 mt-1 max-h-60 w-full scale-100 transform overflow-hidden overflow-y-auto rounded-lg border bg-white opacity-100 shadow-lg transition-all duration-200 ease-out ${className} `}
     >
-      <div className="py-1">
-        {children}
-      </div>
+      <div className="py-1">{children}</div>
     </div>
   );
 };
@@ -140,10 +123,10 @@ interface SelectItemProps {
   className?: string;
 }
 
-export const SelectItem: React.FC<SelectItemProps> = ({ 
-  value, 
-  children, 
-  className = '' 
+export const SelectItem: React.FC<SelectItemProps> = ({
+  value,
+  children,
+  className = '',
 }) => {
   const { onChange, setOpen, value: selectedValue } = useSelectContext();
 
@@ -157,23 +140,15 @@ export const SelectItem: React.FC<SelectItemProps> = ({
   return (
     <div
       onClick={handleSelect}
-      className={`
-        group flex items-center justify-between px-3 py-2 
-        text-sm cursor-pointer select-none
-        transition-colors duration-150 ease-in-out
-        ${isSelected ? 'bg-blue-50 text-blue-600' : 'text-gray-900 hover:bg-gray-50'}
-        ${className}
-      `}
+      className={`group flex cursor-pointer select-none items-center justify-between px-3 py-2 text-sm transition-colors duration-150 ease-in-out ${isSelected ? 'bg-blue-50 text-blue-600' : 'text-gray-900 hover:bg-gray-50'} ${className} `}
     >
-      <div className="flex items-center gap-2">
-        {children}
-      </div>
+      <div className="flex items-center gap-2">{children}</div>
       {isSelected && (
-        <svg 
-          className="w-4 h-4 text-blue-600" 
-          fill="none" 
-          strokeWidth="2" 
-          stroke="currentColor" 
+        <svg
+          className="h-4 w-4 text-blue-600"
+          fill="none"
+          strokeWidth="2"
+          stroke="currentColor"
           viewBox="0 0 24 24"
         >
           <path d="M5 13l4 4L19 7" />
@@ -183,8 +158,8 @@ export const SelectItem: React.FC<SelectItemProps> = ({
   );
 };
 
-export const SelectValue: React.FC<{ placeholder?: string }> = ({ 
-  placeholder 
+export const SelectValue: React.FC<{ placeholder?: string }> = ({
+  placeholder,
 }) => {
   const { value } = useSelectContext();
   return <>{value || placeholder}</>;

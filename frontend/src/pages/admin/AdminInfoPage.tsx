@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import NavBar from './components/AdminNavBar';
-
 
 interface Notice {
   userId: number;
