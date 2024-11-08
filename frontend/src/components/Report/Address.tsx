@@ -5,18 +5,19 @@ import { useReportStore } from '../../store/ReportInfoStore';
 const Address: React.FC = () => {
   const { address, setAddress } = useReportStore();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setAddress(e.target.value);
   };
 
   return (
     <>
       <div className="flex flex-col items-center justify-center gap-4">
-        <input
-          className="my-border px-4 py-2 font-bold w-full"
+        <textarea
+          className="my-border w-full resize-none break-words px-4 py-2 font-bold"
           onChange={handleChange}
           value={address ?? '위치를 확인해주세요'}
           disabled
+          rows={2} // 원하는 초기 높이에 맞춰 조정할 수 있습니다.
         />
 
         <Link
