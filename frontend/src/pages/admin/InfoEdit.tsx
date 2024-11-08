@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import NavBar from './AdminNavBar';
+import NavBar from './components/AdminNavBar';
 
 const InfoEdit: React.FC = () => {
   const [title, setTitle] = useState<string>('');
