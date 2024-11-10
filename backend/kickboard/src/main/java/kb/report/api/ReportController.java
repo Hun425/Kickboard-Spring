@@ -23,7 +23,7 @@ import java.util.List;
  * @author 지예찬
  */
 @RestController
-@RequestMapping("/api/v1/kickboard/reports")
+@RequestMapping("api/v1/kickboard/reports")
 @RequiredArgsConstructor
 public class ReportController {
     private final ReportService reportService;

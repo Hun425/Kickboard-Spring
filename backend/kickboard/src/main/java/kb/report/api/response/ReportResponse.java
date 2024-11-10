@@ -30,6 +30,7 @@ public class ReportResponse {
         response.setReportId(report.getReportId());
         response.setCompanyName(report.getKickboard().getCompany().getName());
         response.setSerialNumber(report.getKickboard().getSerialNumber());
+        response.setCategory(report.getCategory().getName()); // category의 name 필드 사용
         response.setAddress(report.getAddress());
         response.setLatitude(report.getLatitude());
         response.setLongitude(report.getLongitude());
