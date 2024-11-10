@@ -1,7 +1,9 @@
 package kb.report.internal.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import kb.company.domain.Company;
 import kb.company.domain.Kickboard;
+import kb.company.repository.CompanyRepository;
 import kb.company.repository.KickboardRepository;
 import kb.core.service.FileService;
 import kb.report.api.request.ReportCreateRequest;
@@ -40,12 +42,15 @@ public class ReportService {
     private final ReportCategoryRepository reportCategoryRepository;
     private final FileService fileService;
     private final LocationRepository locationRepository;
-
+    private final CompanyRepository companyRepository;
 
     @Transactional
     public ReportResponse createReport(ReportCreateRequest reportRequest, MultipartFile[] images) {
+        Company company = companyRepository.findById(reportRequest.getCompanyId())
+                .orElseThrow(() -> new EntityNotFoundException("해당하는 회사가 존재하지 않습니다."));
+
         // 킥보드 정보를 가져오거나 없을 경우 예외 처리
-        Kickboard kickboard = kickboardRepository.findBySerialNumber(reportRequest.getSerialNumber())
+        Kickboard kickboard = kickboardRepository.findByCompanyAndSerialNumber(company, reportRequest.getSerialNumber())
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 킥보드가 존재하지 않습니다."));
 
         // 신고 카테고리를 ID로 조회하여 없을 경우 예외 처리

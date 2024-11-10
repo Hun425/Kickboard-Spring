@@ -13,7 +13,7 @@ import lombok.Getter;
 public class ReportCreateRequest {
 
     @NotNull(message = "회사 이름은 필수 입력 사항입니다.")
-    private String companyName;  // 킥보드 회사명
+    private Long companyId;  // 킥보드 회사 ID
 
     @NotNull(message = "킥보드 시리얼 번호는 필수 입력 사항입니다.")
     private String serialNumber;  // 킥보드 시리얼 번호
