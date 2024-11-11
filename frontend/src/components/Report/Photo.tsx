@@ -27,7 +27,6 @@ const Photo: React.FC = () => {
       }
 
       setPhotos(imageUrl);
-      console.log(imageUrl);
 
       stream.getTracks().forEach((track) => track.stop()); // Stop the video stream
     } catch (error) {

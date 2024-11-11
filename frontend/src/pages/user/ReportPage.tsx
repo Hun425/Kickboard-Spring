@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useStateStore } from '../../store/StateStore';
 import Address from '../../components/report/Address';
 import ViolationTypeSelector from '../../components/report/ViolationTypeSelector';
 import Photo from '../../components/report/Photo';
 import ReportContent from '../../components/report/ReportContent';
 import { useReportStore } from '../../store/ReportInfoStore';
+import Serial from '../../components/report/Serial';
+import Company from '../../components/report/Company';
+import { useNavigate, useSearchParams } from 'react-router-dom'; // useNavigate 추가
 
 const ReportPage: React.FC = () => {
   const { title, setTitle, setReport } = useStateStore();
   const {
-    companyName,
+    companyId,
     serialNumber,
     latitude,
     longitude,
@@ -17,21 +20,33 @@ const ReportPage: React.FC = () => {
     categoryId,
     description,
     photos,
+    setCompanyId,
+    setSerialNumber,
     setLatitude,
     setLongitude,
+    reset,
   } = useReportStore();
 
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // 위치 정보 가져오는 useEffect
   useEffect(() => {
+    if (!Boolean(companyId)) {
+      setCompanyId(Number(searchParams.get('companyId')) ?? 0);
+    }
+
+    if (!Boolean(serialNumber)) {
+      setSerialNumber(searchParams.get('serialNumber') ?? '');
+    }
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          // 위치 정보 성공적으로 얻었을 때
           setLatitude(position.coords.latitude);
           setLongitude(position.coords.longitude);
-          console.log(latitude + ' ' + longitude);
         },
         (err) => {
-          // 위치 정보 오류 발생 시
           console.log(err);
         }
       );
@@ -50,7 +65,7 @@ const ReportPage: React.FC = () => {
 
     // 수집된 데이터를 한 객체로 묶어 API 요청
     const formData = new FormData();
-    formData.append('companyName', companyName ?? '');
+    formData.append('companyId', companyId.toString());
     formData.append('serialNumber', serialNumber ?? '');
     formData.append('latitude', latitude.toString());
     formData.append('longitude', longitude.toString());
@@ -59,10 +74,6 @@ const ReportPage: React.FC = () => {
     formData.append('description', description ?? '');
     formData.append('firstPhoto', photos.firstPhoto);
     formData.append('secondPhoto', photos.secondPhoto);
-
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
 
     try {
       const response = await fetch('https://api.example.com/report', {
@@ -74,12 +85,24 @@ const ReportPage: React.FC = () => {
     } catch (error) {
       console.error('Error submitting report:', error);
     }
+
+    reset();
+    navigate('/list');
   };
 
-  const isButtonDisabled = false;
+  const isButtonDisabled =
+    !Boolean(companyId) ||
+    !Boolean(serialNumber) ||
+    !Boolean(address) ||
+    !Boolean(photos.firstPhoto);
+
   return (
     <>
       <form onSubmit={handleSubmit} method="post" encType="multipart/form-data">
+        <Company />
+        <hr className="my-4" />
+        <Serial />
+        <hr className="my-4" />
         <Address />
         <hr className="my-4" />
         <ViolationTypeSelector />
