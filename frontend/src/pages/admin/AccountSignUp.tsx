@@ -23,7 +23,7 @@ const AccountSignUp: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await fetch('/kickboard/signup', {
+      const response = await fetch('api/v1/kickboard/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
