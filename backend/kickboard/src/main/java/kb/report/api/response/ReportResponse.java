@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 public class ReportResponse {
     private Long reportId;
-    private String companyName;
+    private Long companyId;
     private String serialNumber;
     private String address;
     private Double latitude;
@@ -28,7 +28,7 @@ public class ReportResponse {
     public static ReportResponse from(Report report) {
         ReportResponse response = new ReportResponse();
         response.setReportId(report.getReportId());
-        response.setCompanyName(report.getKickboard().getCompany().getName());
+        response.setCompanyId(report.getKickboard().getCompany().getCompanyId());
         response.setSerialNumber(report.getKickboard().getSerialNumber());
         response.setCategory(report.getCategory().getName()); // category의 name 필드 사용
         response.setAddress(report.getAddress());

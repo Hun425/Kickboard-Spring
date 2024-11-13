@@ -7,6 +7,10 @@ import java.util.List;
 
 @Data
 public class ReportDetailResponse {
+
+    private Long reportId;
+    private Long companyId;
+
     private String serialNumber;
     private String address;
     private Double latitude;
@@ -19,6 +23,9 @@ public class ReportDetailResponse {
 
     public static ReportDetailResponse from(Report report, List<String> images) {
         ReportDetailResponse response = new ReportDetailResponse();
+
+        response.setReportId(report.getReportId());
+        response.setCompanyId(report.getKickboard().getCompany().getCompanyId());
         response.setSerialNumber(report.getKickboard().getSerialNumber());
         response.setAddress(report.getAddress());
         response.setLatitude(report.getLatitude());
