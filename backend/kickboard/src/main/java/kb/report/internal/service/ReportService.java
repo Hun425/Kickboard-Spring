@@ -109,12 +109,19 @@ public class ReportService {
     }
 
     public List<ReportResponse> getReportsByArea(String area) {
-        // 구역 이름으로 Location 조회
-        Location location = locationRepository.findByName(area)
-                .orElseThrow(() -> new EntityNotFoundException("해당 구역을 찾을 수 없습니다."));
+        List<Report> reports;
 
-        // locationId로 해당 구역의 Report 조회
-        List<Report> reports = reportRepository.findByLocation(location);
+        // area가 null 또는 비어 있는 경우 전체 데이터를 조회
+        if (area == null || area.trim().isEmpty()) {
+            reports = reportRepository.findAll(); // 모든 Report를 조회
+        } else {
+            // area로 Location 조회
+            Location location = locationRepository.findByName(area)
+                    .orElseThrow(() -> new EntityNotFoundException("해당 구역을 찾을 수 없습니다."));
+
+            // locationId로 해당 구역의 Report 조회
+            reports = reportRepository.findByLocation(location);
+        }
 
         // Report 리스트를 ReportResponse 리스트로 변환하여 반환
         return reports.stream()

@@ -23,7 +23,6 @@ import java.util.List;
  * @author 지예찬
  */
 @RestController
-@RequestMapping("api/v1/kickboard/reports")
 @RequiredArgsConstructor
 public class ReportController {
     private final ReportService reportService;
@@ -36,7 +35,7 @@ public class ReportController {
                     content = @Content(schema = @Schema(implementation = ReportResponse.class))
             ),
     })
-    @PostMapping
+    @PostMapping("api/v1/kickboard/reports")
     public ResponseEntity<?> createReport(
             @Parameter(description = "신고 정보", required = true, content = @Content(mediaType = "application/json", schema = @Schema(implementation = ReportCreateRequest.class)))
             @RequestPart("report") ReportCreateRequest report,
@@ -52,9 +51,9 @@ public class ReportController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "신고 리스트 조회 성공", content = @Content(schema = @Schema(implementation = ReportResponse.class))),
     })
-    @GetMapping
+    @GetMapping("api/v1/kickboard/reports")
     public ResponseEntity<?> getReportsByArea(
-            @Parameter(description = "담당 구역", required = true) @RequestParam("area") String area) {
+            @Parameter(description = "담당 구역", required = false) @RequestParam("area") String area) {
 
         List<ReportResponse> reports = reportService.getReportsByArea(area);
         return ResponseEntity.ok(kb.core.dto.ApiResponse.success(reports));
@@ -64,7 +63,7 @@ public class ReportController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "신고 세부 조회 성공", content = @Content(schema = @Schema(implementation = ReportDetailResponse.class))),
     })
-    @GetMapping("/{reportId}")
+    @GetMapping("api/v1/kickboard/reports/{reportId}")
     public ResponseEntity<?> getReportDetail(
             @Parameter(description = "신고 ID", required = true) @PathVariable Long reportId) {
 
