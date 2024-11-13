@@ -10,7 +10,6 @@ public class ReportDetailResponse {
 
     private Long reportId;
     private Long companyId;
-
     private String serialNumber;
     private String address;
     private Double latitude;

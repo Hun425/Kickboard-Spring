@@ -11,7 +11,7 @@ import lombok.*;
  * @author 채기훈
  */
 @Entity
-@Table(name = "Kicboards")
+@Table(name = "Kickboards")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Kickboard extends BaseEntity {
