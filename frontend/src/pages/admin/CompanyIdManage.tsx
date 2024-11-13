@@ -23,14 +23,30 @@ const CompanyIdManage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await fetch('/kickboard/signup', {
+      // 환경 변수에서 API URL 가져오기
+      const apiUrl = import.meta.env.VITE_URL;
+      const endpoint = '/kickboard/signup';  // API 엔드포인트
+
+      // 요청 URL 구성
+      const url = `${apiUrl}${endpoint}`;
+
+      // KakaoMap API 키 (필요한 경우 Authorization 헤더에 사용)
+      const kakaoMapApiKey = import.meta.env.VITE_KAKAOMAP_API_KEY;
+
+      // API 요청 보내기
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          // 필요시 KakaoMap API 키를 Authorization 헤더에 포함
+          'Authorization': `Bearer ${kakaoMapApiKey}`,
         },
         body: JSON.stringify(formData),
       });
+
       const data = await response.json();
+
+      // 성공적인 응답 처리
       if (data.success) {
         setResponseMessage(data.data);
       } else {

@@ -10,6 +10,10 @@ const AccountSignUp: React.FC = () => {
   });
   const [responseMessage, setResponseMessage] = useState('');
 
+  // VITE 환경 변수에서 URL과 카카오맵 API 키 가져오기
+  const apiUrl = import.meta.env.VITE_URL;  // API URL
+  const kakaoMapApiKey = import.meta.env.VITE_KAKAOMAP_API_KEY;  // 카카오맵 API 키
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -23,13 +27,15 @@ const AccountSignUp: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await fetch('api/v1/kickboard/signup', {
+      // 서버에 POST 요청을 보내 회원가입 처리
+      const response = await fetch(`${apiUrl}/kickboard/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
       });
+
       const data = await response.json();
       if (data.success) {
         setResponseMessage(data.data);
