@@ -1,4 +1,4 @@
-package kb.admin.api.response;
+package kb.report.api.response;
 
 import kb.report.internal.domain.Report;
 import lombok.Getter;

@@ -7,6 +7,7 @@ import kb.company.repository.CompanyRepository;
 import kb.company.repository.KickboardRepository;
 import kb.core.service.FileService;
 import kb.report.api.request.ReportCreateRequest;
+import kb.report.api.response.AdminReportResponse;
 import kb.report.api.response.ReportDetailResponse;
 import kb.report.api.response.ReportResponse;
 import kb.report.internal.domain.Report;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -144,4 +146,49 @@ public class ReportService {
 
         return ReportDetailResponse.from(report, images);
     }
+
+    public Map<String, List<AdminReportResponse>> AdminGetReportsByArea(String area) {
+        // area에 해당하는 Location을 조회
+        Location location = locationRepository.findByName(area)
+                .orElseThrow(() -> new EntityNotFoundException("해당 구역을 찾을 수 없습니다."));
+
+        // 해당 locationId에 해당하는 Report 목록 조회
+        List<Report> reports = reportRepository.findByLocation(location);
+
+        // Report 목록을 AdminReportResponse 목록으로 변환하여 반환
+        List<AdminReportResponse> responseList = reports.stream()
+                .map(AdminReportResponse::from)
+                .collect(Collectors.toList());
+
+        // "reports" 키로 감싸기 위해 Map으로 반환
+        return Map.of("reports", responseList);
+    }
+
+    public List<AdminReportResponse> AdminGetReportsBySerialNumber(String serialNumber) {
+        List<Report> reports = reportRepository.findByKickboardSerialNumberOrderByCreatedAtDesc(serialNumber);
+
+        // 각 Report를 AdminReportResponse로 변환하여 리스트로 반환
+        return reports.stream()
+                .map(AdminReportResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void updateReportStatus(Long reportId, String status) {
+        // 신고 조회
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 신고를 찾을 수 없습니다."));
+
+        // Enum 값 검증 및 상태 업데이트
+        try {
+            ReportStatus reportStatus = ReportStatus.valueOf(status);
+            report.updateStatus(reportStatus); // Report 엔티티에 상태 변경 메서드 추가 필요
+            reportRepository.save(report);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("잘못된 상태 값입니다: " + status);
+        }
+    }
+
+
+
 }
