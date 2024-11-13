@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { useReportStore } from '../../store/ReportInfoStore';
 
-const Photo: React.FC = () => {
-  const { photos, setPhotos } = useReportStore();
+interface PhotoProps {
+  setImage1: React.Dispatch<React.SetStateAction<File | null>>;
+  setImage2: React.Dispatch<React.SetStateAction<File | null>>;
+}
 
-  const [photo1, setPhoto1] = useState<string | null>(null);
-  const [photo2, setPhoto2] = useState<string | null>(null);
+const Photo: React.FC<PhotoProps> = ({ setImage1, setImage2 }) => {
+  const [photo1, setPhoto1] = useState<File | null>(null);
+  const [photo2, setPhoto2] = useState<File | null>(null);
   photo2;
 
   const handleCapture = async () => {
@@ -20,33 +22,56 @@ const Photo: React.FC = () => {
       canvas.height = video.videoHeight;
       canvas.getContext('2d')?.drawImage(video, 0, 0);
 
-      const imageUrl = canvas.toDataURL('image/png');
+      // Base64 데이터를 Blob으로 변환
+      const base64 = canvas.toDataURL('image/png').split(',')[1];
+      const binary = atob(base64);
+      const array = [];
+      for (let i = 0; i < binary.length; i++) {
+        array.push(binary.charCodeAt(i));
+      }
+      const blob = new Blob([new Uint8Array(array)], { type: 'image/png' });
+
+      // Blob을 파일 객체로 변환
+      const file = new File([blob], 'image.png', { type: 'image/png' });
+
+      // 첫 번째 사진과 두 번째 사진을 파일 객체로 저장
       if (!photo1) {
-        setPhoto1(imageUrl);
+        setPhoto1(file);
+        setImage1(file);
       } else {
-        setPhoto2(imageUrl);
+        setPhoto2(file);
+        setImage2(file);
       }
 
-      setPhotos(imageUrl);
-
-      stream.getTracks().forEach((track) => track.stop()); // Stop the video stream
+      // 비디오 스트림 종료
+      stream.getTracks().forEach((track) => track.stop());
     } catch (error) {
       console.error('Camera access denied or error:', error);
     }
   };
 
   const handleDelete = () => {
-    setPhotos('');
-    setPhotos('');
+    setPhoto1(null);
+    setPhoto2(null);
+  };
+
+  // 첫 번째 이미지 파일이 존재하는지 확인 후 URL 생성
+
+  const getImageUrl = (photo: File | null) => {
+    // 파일이 존재하는 경우에만 createObjectURL을 호출합니다.
+    if (photo) {
+      return URL.createObjectURL(photo);
+    }
+    return ''; // 파일이 없으면 빈 문자열을 반환
   };
 
   return (
     <div className="flex flex-col items-center gap-4 p-4">
       <div className="flex items-center justify-center gap-4">
         <div className="my-border flex h-40 w-40 items-center justify-center border text-lg">
-          {photos.firstPhoto ? (
+          {photo1 ? (
             <img
-              src={photos.firstPhoto}
+              src={getImageUrl(photo1)}
               alt="Captured"
               className="h-full w-full object-cover"
             />
@@ -55,9 +80,9 @@ const Photo: React.FC = () => {
           )}
         </div>
         <div className="my-border flex h-40 w-40 items-center justify-center border text-lg">
-          {photos.secondPhoto ? (
+          {photo2 ? (
             <img
-              src={photos.secondPhoto}
+              src={getImageUrl(photo2)}
               alt="Captured"
               className="h-full w-full object-cover"
             />

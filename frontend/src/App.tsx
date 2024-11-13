@@ -31,9 +31,9 @@ import MainContainer1 from './components/MainContainer1';
 import InfoWritePage from './pages/admin/InfoWrite';
 import InfoEditPage from './pages/admin/InfoEdit';
 import AccountSignUp from './pages/admin/AccountSignUp';
-
 import CompanyIdMagage from './pages/admin/CompanyIdManage';
 import AdminIdManage from './pages/admin/AdminIdManage';
+import ReportPage1 from './pages/user/ReportPage1';
 
 function App() {
   const isLoggedIn = useCollectorAuthStore((state) => state.isLoggedIn);
@@ -83,7 +83,20 @@ function App() {
               <Navbar />
             </PhoneScreenContainer>
           }
-        ></Route>
+        />
+
+        <Route
+          path="/list/:id"
+          element={
+            <PhoneScreenContainer>
+              <Header />
+              <MainContainer>
+                <ReportPage1 />
+              </MainContainer>
+              <Navbar />
+            </PhoneScreenContainer>
+          }
+        />
 
         <Route
           path="/list"

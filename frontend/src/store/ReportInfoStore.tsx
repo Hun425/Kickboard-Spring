@@ -23,8 +23,8 @@ interface ReportState {
   description: string | null;
   setDescription: (description: string | null) => void;
 
-  photos: { firstPhoto: string; secondPhoto: string };
-  setPhotos: (newPhoto: string) => void;
+  photos: { firstPhoto: File | null; secondPhoto: File | null };
+  setPhotos: (newPhoto: File | null) => void;
 
   reset: () => void; // 초기화 함수
 }
@@ -53,7 +53,7 @@ export const useReportStore = create<ReportState>()(
       description: '',
       setDescription: (description) => set({ description }),
 
-      photos: { firstPhoto: '', secondPhoto: '' },
+      photos: { firstPhoto: null, secondPhoto: null },
       setPhotos: (newPhoto) =>
         set((state) => ({
           photos: {
@@ -72,7 +72,7 @@ export const useReportStore = create<ReportState>()(
           address: null,
           categoryId: 0,
           description: '',
-          photos: { firstPhoto: '', secondPhoto: '' },
+          photos: { firstPhoto: null, secondPhoto: null },
         }),
     }),
     {

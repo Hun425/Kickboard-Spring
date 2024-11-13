@@ -12,7 +12,7 @@ const Header = () => {
 
   return (
     <>
-      <div className="relative">
+      <div className="sticky top-0">
         <div className="relative flex h-10 w-full items-center justify-center border border-black">
           <div
             className="absolute left-4 flex h-8 w-8 items-center justify-center hover:cursor-pointer"

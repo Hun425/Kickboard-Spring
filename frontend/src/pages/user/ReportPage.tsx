@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useStateStore } from '../../store/StateStore';
 import Address from '../../components/report/Address';
 import ViolationTypeSelector from '../../components/report/ViolationTypeSelector';
@@ -7,7 +7,8 @@ import ReportContent from '../../components/report/ReportContent';
 import { useReportStore } from '../../store/ReportInfoStore';
 import Serial from '../../components/report/Serial';
 import Company from '../../components/report/Company';
-import { useNavigate, useSearchParams } from 'react-router-dom'; // useNavigate 추가
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import axios from 'axios';
 
 const ReportPage: React.FC = () => {
   const { title, setTitle, setReport } = useStateStore();
@@ -19,13 +20,15 @@ const ReportPage: React.FC = () => {
     address,
     categoryId,
     description,
-    photos,
     setCompanyId,
     setSerialNumber,
     setLatitude,
     setLongitude,
     reset,
   } = useReportStore();
+
+  const [image1, setImage1] = useState<File | null>(null);
+  const [image2, setImage2] = useState<File | null>(null);
 
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -63,25 +66,42 @@ const ReportPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 수집된 데이터를 한 객체로 묶어 API 요청
     const formData = new FormData();
-    formData.append('companyId', companyId.toString());
-    formData.append('serialNumber', serialNumber ?? '');
-    formData.append('latitude', latitude.toString());
-    formData.append('longitude', longitude.toString());
-    formData.append('address', address ?? '');
-    formData.append('categoryId', categoryId.toString());
-    formData.append('description', description ?? '');
-    formData.append('firstPhoto', photos.firstPhoto);
-    formData.append('secondPhoto', photos.secondPhoto);
+    const reportData = {
+      companyId: companyId,
+      serialNumber: serialNumber,
+      latitude: latitude,
+      longitude: longitude,
+      address: address,
+      categoryId: categoryId,
+      description: description,
+    };
+
+    // JSON 데이터를 Blob으로 변환하여 첨부
+    const reportBlob = new Blob([JSON.stringify(reportData)], {
+      type: 'application/json',
+    });
+
+    formData.append('report', reportBlob);
+
+    if (image1) {
+      formData.append('image', image1);
+    }
+    if (image2) {
+      formData.append('image', image2);
+    }
 
     try {
-      const response = await fetch('https://api.example.com/report', {
-        method: 'POST',
-        body: formData,
-      });
-      const result = await response.json();
-      console.log(result); // 응답 처리
+      const response = await axios.post(
+        import.meta.env.VITE_URL + '/kickboard/reports',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data', // multipart 설정
+          },
+        }
+      );
+      console.log(response.data);
     } catch (error) {
       console.error('Error submitting report:', error);
     }
@@ -90,15 +110,15 @@ const ReportPage: React.FC = () => {
     navigate('/list');
   };
 
-  const isButtonDisabled =
-    !Boolean(companyId) ||
-    !Boolean(serialNumber) ||
-    !Boolean(address) ||
-    !Boolean(photos.firstPhoto);
+  const isButtonDisabled = false;
+  // !Boolean(companyId) ||
+  // !Boolean(serialNumber) ||
+  // !Boolean(address) ||
+  // !Boolean(photos.firstPhoto);
 
   return (
     <>
-      <form onSubmit={handleSubmit} method="post" encType="multipart/form-data">
+      <form onSubmit={handleSubmit}>
         <Company />
         <hr className="my-4" />
         <Serial />
@@ -107,7 +127,7 @@ const ReportPage: React.FC = () => {
         <hr className="my-4" />
         <ViolationTypeSelector />
         <hr className="my-4" />
-        <Photo />
+        <Photo setImage1={setImage1} setImage2={setImage2} />
         <hr className="my-4" />
         <ReportContent />
         <hr className="my-4" />
