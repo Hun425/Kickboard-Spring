@@ -20,6 +20,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     // "noUncheckedSideEffectImports": true
+
+    "forceConsistentCasingInFileNames": false
   },
   "include": ["src", "src/**/*.d.ts", "declarations.d.ts", "src/declarations.d.ts"]
 }

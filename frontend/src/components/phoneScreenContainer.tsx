@@ -10,7 +10,7 @@ const PhoneScreenContainer: React.FC<PhoneScreenContainerProps> = ({
   return (
     <div className="bg-black">
       <div
-        className="h-full min-h-[100.1vh] w-full bg-white md:max-w-[412px]"
+        className="flex h-screen w-full flex-col bg-white md:max-w-[412px]"
         style={{
           width: '412px',
           margin: '0 auto',

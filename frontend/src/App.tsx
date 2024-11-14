@@ -5,10 +5,16 @@ import {
   Navigate,
 } from 'react-router-dom';
 
-import { useAuthStore } from './store/authStore';
+// 핸드폰 사이즈 조절
 import PhoneScreenContainer from './components/phoneScreenContainer';
-import Login from './pages/collector/login';
-import CollectList from './pages/collector/collectList';
+
+// 수거업체 관련
+import ProtectedRoute from './components/ProtectedRoute';
+import { useCollectorAuthStore } from './store/CollectorAuthStore';
+import CollectorLoginPage from './pages/collector/CollectorLoginPage';
+import CollectList from './pages/collector/CollectListPage';
+
+// import AdminMainPage from './pages/admin/adminMainPage';
 import Header from './components/basic/Header';
 import Navbar from './components/basic/Navbar';
 import AdminMainPage from './pages/admin/AdminMainPage';
@@ -19,13 +25,23 @@ import AdminLoginPage from './pages/admin/AdminLogin';
 import ReportPage from './pages/user/ReportPage';
 import ReportListPage from './pages/user/ReportListPage';
 import NoticePage from './pages/user/NoticePage';
+import MainContainer from './components/MainContainer';
+import ReportMapPage from './pages/user/ReportMapPage';
+import MainContainer1 from './components/MainContainer1';
+import InfoWritePage from './pages/admin/InfoWrite';
+import InfoEditPage from './pages/admin/InfoEdit';
+import AccountSignUp from './pages/admin/AccountSignUp';
+import CompanyIdMagage from './pages/admin/CompanyIdManage';
+import AdminIdManage from './pages/admin/AdminIdManage';
+import ReportPage1 from './pages/user/ReportPage1';
 
 function App() {
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const isLoggedIn = useCollectorAuthStore((state) => state.isLoggedIn);
 
   return (
     <Router>
       <Routes>
+        {/* 수거업체 관련 */}
         <Route
           path="/collectors"
           element={
@@ -41,7 +57,7 @@ function App() {
           path="/collector-login"
           element={
             <PhoneScreenContainer>
-              <Login />
+              <CollectorLoginPage />
             </PhoneScreenContainer>
           }
         />
@@ -49,7 +65,9 @@ function App() {
           path="/collectlist"
           element={
             <PhoneScreenContainer>
-              <CollectList />
+              <ProtectedRoute>
+                <CollectList />
+              </ProtectedRoute>
             </PhoneScreenContainer>
           }
         />
@@ -59,7 +77,22 @@ function App() {
           element={
             <PhoneScreenContainer>
               <Header />
-              <ReportPage />
+              <MainContainer>
+                <ReportPage />
+              </MainContainer>
+              <Navbar />
+            </PhoneScreenContainer>
+          }
+        />
+
+        <Route
+          path="/list/:id"
+          element={
+            <PhoneScreenContainer>
+              <Header />
+              <MainContainer>
+                <ReportPage1 />
+              </MainContainer>
               <Navbar />
             </PhoneScreenContainer>
           }
@@ -70,7 +103,9 @@ function App() {
           element={
             <PhoneScreenContainer>
               <Header />
-              <ReportListPage />
+              <MainContainer>
+                <ReportListPage />
+              </MainContainer>
               <Navbar />
             </PhoneScreenContainer>
           }
@@ -81,8 +116,22 @@ function App() {
           element={
             <PhoneScreenContainer>
               <Header />
-              <NoticePage />
+              <MainContainer>
+                <NoticePage />
+              </MainContainer>
               <Navbar />
+            </PhoneScreenContainer>
+          }
+        />
+
+        <Route
+          path="/map"
+          element={
+            <PhoneScreenContainer>
+              <Header />
+              <MainContainer1>
+                <ReportMapPage />
+              </MainContainer1>
             </PhoneScreenContainer>
           }
         />
@@ -92,6 +141,11 @@ function App() {
         <Route path="/adminmap" element={<AdminMapPage />} />
         <Route path="/accountmanage" element={<AccountManagePage />} />
         <Route path="/adminlogin" element={<AdminLoginPage />} />
+        <Route path="/infowrite" element={<InfoWritePage />} />
+        <Route path="/infoedit" element={<InfoEditPage />} />
+        <Route path="/accountsignup" element={<AccountSignUp />} />
+        <Route path="/companyID" element={<CompanyIdMagage />} />
+        <Route path="/adminID" element={<AdminIdManage />} />
       </Routes>
     </Router>
   );
