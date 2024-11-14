@@ -1,6 +1,6 @@
 // BlueButton.stories.tsx
 import { Meta, StoryFn } from '@storybook/react';
-import BlueButton, { ButtonProps } from './blueButton';
+import BlueButton, { ButtonProps } from './BlueButton';
 
 export default {
   title: 'Components/BlueButton',

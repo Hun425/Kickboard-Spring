@@ -10,9 +10,7 @@ const NoticePage: React.FC = () => {
 
   return (
     <>
-      <div className="min-h-[calc(100vh-40px-65px)] overflow-y-auto">
-        <div>공지사항</div>
-      </div>
+      <div>공지사항</div>
     </>
   );
 };
