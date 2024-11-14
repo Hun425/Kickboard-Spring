@@ -18,13 +18,17 @@ const InfoEdit: React.FC = () => {
     };
 
     try {
-      const response = await fetch('/kickboard/admin/notice/create', {
+      // VITE_URL 환경 변수를 사용하여 API URL 설정
+      const apiUrl = `${import.meta.env.VITE_URL}/kickboard/admin/notice/create`;
+
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(requestBody),
       });
+
       const data = await response.json();
 
       if (data.success) {

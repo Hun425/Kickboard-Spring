@@ -12,19 +12,35 @@ const InfoWrite: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
+    // Ensure content isn't just empty spaces
+    if (!title.trim() || !content.trim()) {
+      setErrorMessage('제목과 내용은 필수 항목입니다.');
+      setResponseMessage('');
+      return;
+    }
+
     const requestBody = {
       title,
       content,
     };
 
     try {
-      const response = await fetch('/kickboard/admin/notice/create', {
+      const apiUrl = `${import.meta.env.VITE_URL}/kickboard/admin/notice/create`;
+
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(requestBody),
       });
+
+      // Check if the response is not okay
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || '서버 오류 발생');
+      }
+
       const data = await response.json();
 
       if (data.success) {
@@ -35,10 +51,10 @@ const InfoWrite: React.FC = () => {
         setTitle('');
         setContent('');
       } else {
-        throw new Error(data.error.message);
+        throw new Error(data.error?.message || '알 수 없는 오류');
       }
-    } catch (error) {
-      setErrorMessage(error.message);
+    } catch (error: any) {
+      setErrorMessage(error.message || '알 수 없는 오류가 발생했습니다.');
       setResponseMessage('');
     }
   };
@@ -49,10 +65,7 @@ const InfoWrite: React.FC = () => {
       <div className="ml-72 mr-72 mt-16">
         <h1 className="mb-10 text-center text-2xl font-bold">공지사항 등록</h1>
 
-        <form
-          onSubmit={handleSubmit}
-          className="rounded bg-white p-6 shadow-md"
-        >
+        <form onSubmit={handleSubmit} className="rounded bg-white p-6 shadow-md">
           <div className="mb-4">
             <label htmlFor="title" className="block text-gray-700">
               제목
@@ -75,7 +88,7 @@ const InfoWrite: React.FC = () => {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               className="mt-1 block w-full rounded border p-2"
-              rows={8} // Default height increased
+              rows={8}
               required
             />
           </div>
@@ -88,6 +101,8 @@ const InfoWrite: React.FC = () => {
             </button>
           </div>
         </form>
+
+        {/* Display success or error message */}
         {responseMessage && (
           <p className="mt-4 text-green-500">{responseMessage}</p>
         )}
