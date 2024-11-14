@@ -10,7 +10,7 @@ const AccountManage: React.FC = () => {
         {/* <h1 className="mb-12 text-3xl font-bold text-gray-800">계정 관리</h1> */}
         <div className="w-full max-w-lg rounded-lg bg-white p-8 pt-10 shadow-md">
           <h1 className="mb-12 text-center text-3xl font-bold text-gray-800">
-            계정 관리
+            계정 정보
           </h1>
           <div className="w-full max-w-xs">
             <ul className="mb-4 flex justify-center space-x-4">
@@ -47,7 +47,7 @@ const AccountManage: React.FC = () => {
           </div>
 
           <br />
-          <p style={{ color: 'red', fontWeight: 'bold', fontSize: '1.0rem' }}>
+          {/* <p style={{ color: 'red', fontWeight: 'bold', fontSize: '1.0rem' }}>
             {' '}
             Q. 계정이 없으신가요?
           </p>
@@ -55,7 +55,7 @@ const AccountManage: React.FC = () => {
             <button className="mt-2 w-full rounded bg-green-600 px-4 py-2 text-white transition duration-200 hover:bg-blue-700">
               계정 생성
             </button>
-          </Link>
+          </Link> */}
         </div>
       </div>
     </div>

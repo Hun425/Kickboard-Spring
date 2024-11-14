@@ -57,7 +57,7 @@ const AdminNavBar: React.FC<AdminNavBarProps> = ({
               href="/accountmanage"
               className="text-gray-700 hover:text-gray-900"
             >
-              계정관리
+              계정정보
             </a>
             <a href="/admininfo" className="text-gray-700 hover:text-gray-900">
               공지사항
