@@ -3,11 +3,13 @@ package kb.user.internal.service;
 
 
 import kb.user.api.request.LoginRequest;
+import kb.user.api.response.LoginResponse;
 import kb.user.api.response.TokenResponse;
 import kb.user.internal.config.JwtToken;
 import kb.user.internal.config.JwtTokenProvider;
 import kb.user.internal.config.RefreshTokenRepository;
 import kb.user.internal.domain.User;
+import kb.user.internal.repository.LocationRepository;
 import kb.user.internal.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -27,8 +29,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
-
-    public TokenResponse login(LoginRequest request) {
+    private final LocationRepository locationRepository;
+    public LoginResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
@@ -39,7 +41,9 @@ public class AuthService {
         JwtToken token = tokenProvider.createToken(user);
         refreshTokenRepository.save(user.getEmail(), token.refreshToken());
 
-        return new TokenResponse(token.accessToken(), token.refreshToken());
+        LoginResponse response = new LoginResponse(token.accessToken(), token.refreshToken(),user.getRole().toString(),user.getLocation().getName());
+
+        return response;
     }
 }
 

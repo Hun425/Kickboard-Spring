@@ -21,23 +21,9 @@ spring:
       hibernate:
         format_sql: true
         default_batch_fetch_size: 100
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:}
-      timeout: 3000
-      lettuce:
-        pool:
-          max-active: 8
-          max-idle: 8
-          min-idle: 2
-          max-wait: -1ms
 
-  jwt:
-    secret-key: ${JWT_SECRET_KEY}
-    access-token-validity-in-seconds: 3600  # 1시간
-    refresh-token-validity-in-seconds: 604800  # 1주일
+
+
 
   modulith:
     events:
@@ -79,7 +65,22 @@ cloud:
 #    max-size: 10MB
 #    max-history: 30
 
-
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  access-token-validity-in-seconds: 3600  # 1시간
+  refresh-token-validity-in-seconds: 604800  # 1주일
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 3000
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 2
+          max-wait: -1ms
 
 server:
   port: ${SERVER_PORT:8080}

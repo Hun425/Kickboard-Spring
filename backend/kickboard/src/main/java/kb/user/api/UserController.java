@@ -8,8 +8,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
+import kb.user.api.request.LoginRequest;
 import kb.user.api.request.UserCreateRequest;
 import kb.user.api.response.UserResponse;
+import kb.user.internal.service.AuthService;
 import kb.user.internal.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-
+    private final AuthService authService;
     @Operation(summary = "사용자 생성", description = "새로운 사용자를 생성합니다.")
     @ApiResponses({
             @ApiResponse(
@@ -58,6 +60,13 @@ public class UserController {
             @PathVariable int id) {
         return ResponseEntity.ok(kb.core.dto.ApiResponse.success(userService.findUser(id)));
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
+        return ResponseEntity.ok(kb.core.dto.ApiResponse.success(authService.login(request)));
+    }
+
+
 }
 
 

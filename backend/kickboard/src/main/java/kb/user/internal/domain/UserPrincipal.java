@@ -12,7 +12,6 @@ import lombok.Getter;
  * @param location
  */
 
-@Getter
 public record UserPrincipal(Long userId, String email, UserRole role, Location location) {
 
     public static UserPrincipal from(User user) {
