@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // v6에서는 useNavigate 사용
+import { useNavigate } from 'react-router-dom';
 
 const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -9,12 +9,9 @@ const AdminLogin: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
 
-    // 로그인 데이터
-    const loginData = {
-      email,
-      password,
-    };
+    const loginData = { email, password };
 
     try {
       // VITE_URL 환경변수를 사용하여 요청 URL 생성
@@ -44,12 +41,18 @@ const AdminLogin: React.FC = () => {
           setError(data.error?.message || '로그인 실패');
         }
       } else {
-        // 응답 상태가 OK가 아닐 경우
-        setError(data.error?.message || '서버 오류');
+        setError(data.error?.message || '알 수 없는 오류 발생');
       }
-    } catch (error) {
-      setError('네트워크 오류 발생');
+    } catch (error: any) {
+      if (error instanceof TypeError) {
+        setError('네트워크 오류 발생');
+        console.loginData
+      } else {
+        setError('알 수 없는 오류 발생');
+      }
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -64,7 +67,6 @@ const AdminLogin: React.FC = () => {
         >
           <h2 className="mb-6 text-center text-2xl font-bold">관리자 페이지</h2>
 
-          {/* 오류 메시지 출력 */}
           {error && (
             <div className="mb-4 text-center text-red-500">
               <p>{error}</p>
@@ -72,10 +74,7 @@ const AdminLogin: React.FC = () => {
           )}
 
           <div className="mb-4">
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               이메일
             </label>
             <input
@@ -89,10 +88,7 @@ const AdminLogin: React.FC = () => {
           </div>
 
           <div className="mb-6">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               비밀번호
             </label>
             <input
@@ -108,8 +104,9 @@ const AdminLogin: React.FC = () => {
           <button
             type="submit"
             className="w-full rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300"
+            disabled={isLoading}
           >
-            로그인
+            {isLoading ? '로그인 중...' : '로그인'}
           </button>
         </form>
       </div>

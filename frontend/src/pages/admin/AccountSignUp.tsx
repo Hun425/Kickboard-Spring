@@ -27,15 +27,13 @@ const AccountSignUp: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      // 서버에 POST 요청을 보내 회원가입 처리
-      const response = await fetch(`${apiUrl}/kickboard/signup`, {
+      const response = await fetch('api/v1/kickboard/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
       });
-
       const data = await response.json();
       if (data.success) {
         setResponseMessage(data.data);

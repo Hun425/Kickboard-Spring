@@ -81,18 +81,18 @@ const AdminInfoPage: React.FC = () => {
                   <h3 className="text-lg font-semibold">{notice.title}</h3>
                   <p className="text-gray-600">{notice.content}</p>
                   <div className="mt-2 flex justify-end space-x-2">
-                    <button
+                    {/* <button
                       onClick={() => handleViewNotice(notice.noticeId)}
                       className="rounded bg-blue-600 px-2 py-1 text-white hover:bg-blue-700"
                     >
                       내용보기
-                    </button>
-                    <button
+                    </button> */}
+                    {/* <button
                       onClick={() => handleEditNotice(notice.noticeId)}
                       className="rounded bg-yellow-600 px-2 py-1 text-white hover:bg-yellow-700"
                     >
                       수정하기
-                    </button>
+                    </button> */}
                   </div>
                 </li>
               ))}
