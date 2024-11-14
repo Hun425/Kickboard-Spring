@@ -11,7 +11,6 @@ const AdminLogin: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
 
     const loginData = { email, password };
 
@@ -59,13 +58,16 @@ const AdminLogin: React.FC = () => {
           <h2 className="mb-6 text-center text-2xl font-bold">관리자 페이지</h2>
 
           {error && (
-            <div className="mb-4 text-red-500 text-center">
+            <div className="mb-4 text-center text-red-500">
               <p>{error}</p>
             </div>
           )}
 
           <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               이메일
             </label>
             <input
@@ -79,7 +81,10 @@ const AdminLogin: React.FC = () => {
           </div>
 
           <div className="mb-6">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               비밀번호
             </label>
             <input

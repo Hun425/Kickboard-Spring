@@ -12,7 +12,7 @@ const AccountSignUp: React.FC = () => {
 
   // VITE 환경 변수에서 URL과 카카오맵 API 키 가져오기
   const apiUrl = import.meta.env.VITE_URL; // API URL
-  const kakaoMapApiKey = import.meta.env.VITE_KAKAOMAP_API_KEY; // 카카오맵 API 키
+  // const kakaoMapApiKey = import.meta.env.VITE_KAKAOMAP_API_KEY; // 카카오맵 API 키
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -27,7 +27,8 @@ const AccountSignUp: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await fetch('api/v1/kickboard/signup', {
+      // apiUrl을 사용하여 요청 경로 수정
+      const response = await fetch(`${apiUrl}/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

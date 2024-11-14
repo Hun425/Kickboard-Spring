@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import NavBar from './components/AdminNavBar';
 
 const InfoEdit: React.FC = () => {
@@ -7,7 +7,7 @@ const InfoEdit: React.FC = () => {
   const [content, setContent] = useState<string>('');
   const [responseMessage, setResponseMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -41,7 +41,7 @@ const InfoEdit: React.FC = () => {
       } else {
         throw new Error(data.error.message);
       }
-    } catch (error) {
+    } catch (error: any) {
       setErrorMessage(error.message);
       setResponseMessage('');
     }

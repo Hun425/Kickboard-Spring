@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import NavBar from './components/AdminNavBar';
 
 const InfoWrite: React.FC = () => {
@@ -7,7 +7,7 @@ const InfoWrite: React.FC = () => {
   const [content, setContent] = useState<string>('');
   const [responseMessage, setResponseMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -65,7 +65,10 @@ const InfoWrite: React.FC = () => {
       <div className="ml-72 mr-72 mt-16">
         <h1 className="mb-10 text-center text-2xl font-bold">공지사항 등록</h1>
 
-        <form onSubmit={handleSubmit} className="rounded bg-white p-6 shadow-md">
+        <form
+          onSubmit={handleSubmit}
+          className="rounded bg-white p-6 shadow-md"
+        >
           <div className="mb-4">
             <label htmlFor="title" className="block text-gray-700">
               제목
