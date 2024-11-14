@@ -13,8 +13,10 @@ import kb.report.api.response.AdminReportResponse;
 import kb.report.api.response.ReportDetailResponse;
 import kb.report.api.response.ReportResponse;
 import kb.report.internal.service.ReportService;
+import kb.user.internal.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -82,7 +84,7 @@ public class ReportController {
     })
     @GetMapping("api/v1/kickboard/admin/reports")
     public ResponseEntity<?> adminGetReportsByArea(
-            @Parameter(description = "담당 구역", required = true) @RequestParam("area") String area) {
+            @Parameter(description = "담당 구역", required = true) @RequestParam("area") String area, @AuthenticationPrincipal User user) {
 
         Map<String, List<AdminReportResponse>> reports = reportService.AdminGetReportsByArea(area);
         return ResponseEntity.ok(kb.core.dto.ApiResponse.success(reports));    }
@@ -93,7 +95,7 @@ public class ReportController {
     })
     @GetMapping("api/v1/kickboard/admin/reports/{serialNumber}")
     public ResponseEntity<?> AdmingetReportsBySerialNumber(
-            @Parameter(description = "serialNumber", required = true) @PathVariable String serialNumber) {
+            @Parameter(description = "serialNumber", required = true) @PathVariable String serialNumber, @AuthenticationPrincipal User user) {
 
         List<AdminReportResponse> reportDetails = reportService.AdminGetReportsBySerialNumber(serialNumber);
         Map<String, Object> response = new HashMap<>();

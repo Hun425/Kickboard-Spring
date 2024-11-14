@@ -31,6 +31,7 @@ public class CollectionRequest extends BaseEntity {
 
     private String photoUrl;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "processType")
     private CollectionProcessStatus processType;
 
