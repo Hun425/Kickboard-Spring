@@ -47,15 +47,15 @@ const AccountManage: React.FC = () => {
           </div>
 
           <br />
-          {/* <p style={{ color: 'red', fontWeight: 'bold', fontSize: '1.0rem' }}>
+          <p style={{ color: 'red', fontWeight: 'bold', fontSize: '1.0rem' }}>
             {' '}
-            Q. 계정이 없으신가요?
+            Q. 새로운 계정이 필요하신가요?
           </p>
           <Link to="/accountsignup">
             <button className="mt-2 w-full rounded bg-green-600 px-4 py-2 text-white transition duration-200 hover:bg-blue-700">
               계정 생성
             </button>
-          </Link> */}
+          </Link>
         </div>
       </div>
     </div>

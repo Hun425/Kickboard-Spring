@@ -11,9 +11,9 @@ const AdminIdManage: React.FC = () => {
         // 환경 변수에서 API URL 가져오기
         const apiUrl = import.meta.env.VITE_URL;
 
-        // 1번부터 5번까지의 사용자 정보를 가져오기
+        // 1번부터 15번까지의 사용자 정보를 가져오기
         const userRequests = [];
-        for (let i = 1; i <= 5; i++) {
+        for (let i = 1; i <= 20; i++) {
           const endpoint = `/users/${i}`;
           const url = `${apiUrl}${endpoint}`;
           userRequests.push(fetch(url).then((response) => response.json()));
@@ -22,12 +22,17 @@ const AdminIdManage: React.FC = () => {
         // 모든 요청을 병렬로 보내고 응답을 기다림
         const responses = await Promise.all(userRequests);
 
-        const data = responses.map((response) => response.data).filter(Boolean); // 유효한 데이터를 필터링
+        // GOVERNMENT_OFFICIAL 역할을 가진 사용자만 필터링
+        const filteredData = responses
+          .map((response) => response.data)
+          .filter((data) => data?.role === 'GOVERNMENT_OFFICIAL'); // role이 'GOVERNMENT_OFFICIAL'인 경우만 필터링
 
-        if (data.length > 0) {
-          setAdminData(data); // 데이터를 상태에 저장
+        if (filteredData.length > 0) {
+          setAdminData(filteredData); // 필터링된 데이터를 상태에 저장
         } else {
-          setResponseMessage('사용자 데이터를 찾을 수 없습니다.');
+          setResponseMessage(
+            'GOVERNMENT_OFFICIAL 역할을 가진 사용자가 없습니다.'
+          );
         }
       } catch (error) {
         setResponseMessage('서버에 연결할 수 없습니다.');
@@ -43,11 +48,9 @@ const AdminIdManage: React.FC = () => {
       <NavBar />
 
       <div className="container mx-auto p-6">
-        {/* <h2 className="text-2xl font-semibold text-gray-800">관리자 계정  </h2> */}
         <h1 className="mb-8 mt-8 text-center text-2xl font-semibold text-gray-800">
           관리자 계정
         </h1>
-        {/* <h2 className="text-2xl font-semibold text-gray-800">관리자 계정  </h2> */}
         {responseMessage ? (
           <div className="mb-6 rounded-lg border-l-4 border-red-500 bg-red-100 p-4 text-red-700">
             <p className="font-medium">{responseMessage}</p>
@@ -60,7 +63,6 @@ const AdminIdManage: React.FC = () => {
               className="mx-auto mb-6 max-w-lg overflow-hidden rounded-lg bg-white shadow-lg"
             >
               <div className="p-6">
-                {/* <h2 className="text-2xl font-semibold text-gray-800">관리자 계정 {index + 1} </h2> */}
                 <div className="space-y-4">
                   <div className="flex items-center">
                     <span className="w-24 font-medium text-gray-600">지역</span>

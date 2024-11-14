@@ -2,17 +2,27 @@ import React, { useState } from 'react';
 import NavBar from './components/AdminNavBar';
 
 const AccountSignUp: React.FC = () => {
+  // Define the type for location keys
+  type LocationKey = keyof typeof locationMap;
+
   const [formData, setFormData] = useState({
-    area: '',
-    email: '',
-    password: '',
-    role: 'admin',
+    area: '' as LocationKey, // 지역
+    email: '', // 이메일
+    password: '', // 비밀번호
+    role: 'GOVERNMENT_OFFICIAL', // 기본값 설정
   });
   const [responseMessage, setResponseMessage] = useState('');
 
-  // VITE 환경 변수에서 URL과 카카오맵 API 키 가져오기
   const apiUrl = import.meta.env.VITE_URL; // API URL
-  // const kakaoMapApiKey = import.meta.env.VITE_KAKAOMAP_API_KEY; // 카카오맵 API 키
+
+  // 지역에 대한 locationId 매핑
+  const locationMap = {
+    광산구: 1, // locationId: 1
+    동구: 2, // locationId: 2
+    서구: 3, // locationId: 3
+    남구: 4, // locationId: 4
+    북구: 5, // locationId: 5
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -26,18 +36,39 @@ const AccountSignUp: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // 선택된 area에 맞는 locationId 추출
+    const locationId = locationMap[formData.area];
+
+    if (!locationId) {
+      setResponseMessage('잘못된 지역입니다.');
+      return;
+    }
+
+    // 디버깅: 콘솔로 formData 확인
+    console.log('formData:', formData);
+
+    // requestBody 수정: locationId만 전달
+    const requestBody = {
+      email: formData.email,
+      password: formData.password, // 비밀번호 추가
+      role: formData.role,
+      locationId, // locationId 사용
+    };
+
     try {
-      // apiUrl을 사용하여 요청 경로 수정
       const response = await fetch(`${apiUrl}/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(requestBody),
       });
+
       const data = await response.json();
+
       if (data.success) {
-        setResponseMessage(data.data);
+        setResponseMessage('회원가입 성공');
       } else {
         setResponseMessage(data.error?.message || '회원가입에 실패했습니다.');
       }
@@ -67,8 +98,8 @@ const AccountSignUp: React.FC = () => {
               onChange={handleChange}
               className="w-full rounded border p-2"
             >
-              <option value="admin">관리자</option>
-              <option value="collector">수거업체</option>
+              <option value="GOVERNMENT_OFFICIAL">관리자</option>
+              <option value="COLLECTION_COMPANY">수거업체</option>
             </select>
           </div>
           <div className="mb-4">
