@@ -22,8 +22,6 @@ const ReportPage: React.FC = () => {
     description,
     setCompanyId,
     setSerialNumber,
-    setLatitude,
-    setLongitude,
     reset,
   } = useReportStore();
 
@@ -41,20 +39,6 @@ const ReportPage: React.FC = () => {
 
     if (!Boolean(serialNumber)) {
       setSerialNumber(searchParams.get('serialNumber') ?? '');
-    }
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLatitude(position.coords.latitude);
-          setLongitude(position.coords.longitude);
-        },
-        (err) => {
-          console.log(err);
-        }
-      );
-    } else {
-      console.log('이 브라우저는 Geolocation을 지원하지 않습니다.');
     }
   }, []);
 

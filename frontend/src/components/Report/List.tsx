@@ -3,7 +3,26 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { Link } from 'react-router-dom';
 
-const List: React.FC = () => {
+interface ReportData {
+  address: string;
+  area: string;
+  category: string;
+  companyId: number;
+  createdAt: string;
+  descriptions: string;
+  images: string[];
+  latitude: number;
+  longitude: number;
+  reportId: number;
+  serialNumber: string;
+  status: string;
+}
+
+interface ListProps {
+  response: ReportData[]; // response의 타입을 실제 데이터에 맞게 정의해주세요
+}
+
+const List: React.FC<ListProps> = ({ response }) => {
   const [activeItem, setActiveItem] = useState<string>('전체');
   const [area, setArea] = useState<string>('');
 
@@ -18,50 +37,6 @@ const List: React.FC = () => {
   const areaOptions = ['전체', '북구', '서구', '동구', '남구', '광산구'];
 
   const commonClasses = 'rounded-lg px-4 py-2 whitespace-nowrap';
-  const response = [
-    {
-      reportId: 1,
-      companyId: 1,
-      serialNumber: '123456',
-      address: '북구 1번',
-      latitude: 35.2052295,
-      longitude: 126.8117828,
-      categoryId: 1,
-      status: 'REPORT_RECEIVED',
-      photos: { firstPhoto: '', secondPhoto: '' },
-      description: 'test',
-      createdAt: '2024-11-11 15:23:44',
-      area: '북구',
-    },
-    {
-      reportId: 2,
-      companyId: 2,
-      serialNumber: '123456',
-      address: '남구 2번',
-      latitude: 35.2052295,
-      longitude: 126.8117828,
-      categoryId: 2,
-      status: 'REPORT_COMPLETED',
-      photos: { firstPhoto: '', secondPhoto: '' },
-      description: 'test',
-      createdAt: '2024-11-11 15:23:44',
-      area: '남구',
-    },
-    {
-      reportId: 3,
-      companyId: 2,
-      serialNumber: '123456',
-      address: '서구 3번',
-      latitude: 35.2052295,
-      longitude: 126.8117828,
-      categoryId: 2,
-      status: 'REPORT_COMPLETED',
-      photos: { firstPhoto: '', secondPhoto: '' },
-      description: 'test',
-      createdAt: '2024-11-11 15:23:44',
-      area: '서구',
-    },
-  ];
 
   // 상태에 따른 필터링 함수
   const filteredResponse = response.filter((item) => {
@@ -85,6 +60,23 @@ const List: React.FC = () => {
     );
   };
 
+  const formatDateTime = (dateString: string): string => {
+    const date = new Date(dateString);
+
+    return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+  };
+
+  const formatDateTime1 = (dateString: string): string => {
+    const date = new Date(dateString);
+
+    // 오전/오후 판단
+    const hours = date.getHours();
+    const ampm = hours >= 12 ? '오후' : '오전';
+    const displayHours = hours > 12 ? hours - 12 : hours;
+
+    return `${ampm} ${displayHours}시 ${String(date.getMinutes()).padStart(2, '0')}분`;
+  };
+
   return (
     <>
       <div className="flex flex-col gap-4">
@@ -100,8 +92,7 @@ const List: React.FC = () => {
                 />
               </MenuButton>
             </div>
-
-            <MenuItems className="absolute right-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in">
+            <MenuItems className="absolute right-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
               <div className="py-1">
                 {areaOptions.map((areaOption) => (
                   <MenuItem key={areaOption}>
@@ -161,19 +152,28 @@ const List: React.FC = () => {
           </li>
         </ul>
         {/* 목록 부분 */}
-        {filteredResponse.map((item) => (
-          <div key={item.reportId}>
-            <Link to={`${item.reportId}`}>
-              <div className="rounded-lg border p-4">
-                <div className="font-bold">{item.address}</div>
-                <div className="mt-4 flex items-center justify-between">
-                  <div>{item.createdAt}</div>
-                  {getStatus(item.status)}
+        {response && response.length > 0 ? (
+          filteredResponse.map((item) => (
+            <div key={item.reportId}>
+              <Link to={`${item.reportId}`}>
+                <div className="rounded-lg border p-4">
+                  <div className="font-bold">{item.address}</div>
+                  <div className="mt-4 flex items-center justify-between">
+                    <div className="flex flex-col items-center">
+                      <span>{formatDateTime(item.createdAt)}</span>
+                      <span>{formatDateTime1(item.createdAt)}</span>
+                    </div>
+                    {getStatus(item.status)}
+                  </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            </div>
+          ))
+        ) : (
+          <div className="text-center text-gray-500">
+            표시할 데이터가 없습니다.
           </div>
-        ))}
+        )}
       </div>
     </>
   );
