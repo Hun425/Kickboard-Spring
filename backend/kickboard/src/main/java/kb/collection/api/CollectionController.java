@@ -8,7 +8,7 @@ import kb.collection.api.response.CollectionRequestResponse;
 import kb.collection.internal.domain.CollectionStatus;
 import kb.collection.internal.service.CollectionRequestService;
 import kb.core.dto.ApiResponse;
-import kb.user.internal.domain.User;
+import kb.user.internal.config.LocationAuth;
 import kb.user.internal.domain.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -30,6 +30,7 @@ import java.util.List;
 public class CollectionController {
     private final CollectionRequestService collectionRequestService;
 
+    @LocationAuth
     @Operation(summary = "수거 요청 생성")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,value = "/{reportId}")
     public ResponseEntity<ApiResponse<CollectionRequestResponse>> createRequest(
@@ -40,6 +41,7 @@ public class CollectionController {
                 collectionRequestService.createRequest(reportId,request)));
     }
 
+    @LocationAuth
     @Operation(summary = "수거 요청 상태 업데이트")
     @PatchMapping(
             value = "/{requestId}",
@@ -53,6 +55,7 @@ public class CollectionController {
                 collectionRequestService.updateStatus(requestId,request)));
     }
 
+    @LocationAuth
     @Operation(summary = "수거 요청 조회")
     @GetMapping("/{requestId}")
     public ResponseEntity<ApiResponse<CollectionRequestResponse>> getRequest(
@@ -62,6 +65,7 @@ public class CollectionController {
                 collectionRequestService.getRequest(requestId)));
     }
 
+    @LocationAuth
     @Operation(summary = "상태별 수거 요청 목록 조회")
     @GetMapping
     public ResponseEntity<ApiResponse<List<CollectionRequestResponse>>> getRequestsByStatus(
