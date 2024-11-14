@@ -1,6 +1,6 @@
 // PhoneScreenContainer.stories.tsx
 import { Meta, StoryFn } from '@storybook/react';
-import PhoneScreenContainer from './PhoneScreenContainer';
+import PhoneScreenContainer from './phoneScreenContainer';
 
 export default {
   title: 'Components/PhoneScreenContainer',
