@@ -22,6 +22,7 @@ public class JwtAuthentication implements Authentication {
         this.authorities = authorities;
     }
 
+
     public String getToken() {
         return token;
     }

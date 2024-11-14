@@ -8,9 +8,12 @@ import kb.collection.api.response.CollectionRequestResponse;
 import kb.collection.internal.domain.CollectionStatus;
 import kb.collection.internal.service.CollectionRequestService;
 import kb.core.dto.ApiResponse;
+import kb.user.internal.domain.User;
+import kb.user.internal.domain.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +34,8 @@ public class CollectionController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,value = "/{reportId}")
     public ResponseEntity<ApiResponse<CollectionRequestResponse>> createRequest(
             @PathVariable Long reportId,
-            @ModelAttribute CollectionRequestCreateRequest request) {
+            @ModelAttribute CollectionRequestCreateRequest request,
+            @AuthenticationPrincipal UserPrincipal user) {
         return ResponseEntity.ok(ApiResponse.success(
                 collectionRequestService.createRequest(reportId,request)));
     }
@@ -43,7 +47,8 @@ public class CollectionController {
     )
     public ResponseEntity<ApiResponse<CollectionRequestResponse>> updateStatus(
             @PathVariable Long requestId,
-            @ModelAttribute CollectionStatusUpdateRequest request) {
+            @ModelAttribute CollectionStatusUpdateRequest request,
+            @AuthenticationPrincipal UserPrincipal user) {
         return ResponseEntity.ok(ApiResponse.success(
                 collectionRequestService.updateStatus(requestId,request)));
     }
@@ -51,7 +56,8 @@ public class CollectionController {
     @Operation(summary = "수거 요청 조회")
     @GetMapping("/{requestId}")
     public ResponseEntity<ApiResponse<CollectionRequestResponse>> getRequest(
-            @PathVariable Long requestId) {
+            @PathVariable Long requestId,
+            @AuthenticationPrincipal UserPrincipal user) {
         return ResponseEntity.ok(ApiResponse.success(
                 collectionRequestService.getRequest(requestId)));
     }
@@ -59,7 +65,8 @@ public class CollectionController {
     @Operation(summary = "상태별 수거 요청 목록 조회")
     @GetMapping
     public ResponseEntity<ApiResponse<List<CollectionRequestResponse>>> getRequestsByStatus(
-            @RequestParam CollectionStatus status) {
+            @RequestParam CollectionStatus status,
+            @AuthenticationPrincipal UserPrincipal user) {
         return ResponseEntity.ok(ApiResponse.success(
                 collectionRequestService.getRequestsByStatus(status)));
     }
