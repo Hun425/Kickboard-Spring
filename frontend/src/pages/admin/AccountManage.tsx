@@ -10,7 +10,7 @@ const AccountManage: React.FC = () => {
         {/* <h1 className="mb-12 text-3xl font-bold text-gray-800">계정 관리</h1> */}
         <div className="w-full max-w-lg rounded-lg bg-white p-8 pt-10 shadow-md">
           <h1 className="mb-12 text-center text-3xl font-bold text-gray-800">
-            계정 정보
+            계정 관리
           </h1>
           <div className="w-full max-w-xs">
             <ul className="mb-4 flex justify-center space-x-4">
