@@ -45,7 +45,8 @@ const InfoWrite: React.FC = () => {
 
       if (data.success) {
         setResponseMessage(
-          `공지사항이 등록되었습니다. ID: ${data.data.noticeId}`
+          `공지사항이 등록되었습니다.`
+          // ID: ${data.data.noticeId}
         );
         setErrorMessage('');
         setTitle('');

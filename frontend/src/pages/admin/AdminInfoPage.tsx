@@ -1,5 +1,3 @@
-// AdminInfoPage.tsx
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -21,7 +19,7 @@ const AdminInfoPage: React.FC = () => {
     const fetchNotices = async () => {
       try {
         const response = await axios.get(
-          'http://localhost:8080/api/v1/kickboard/admin/notice/notices'
+          `${import.meta.env.VITE_URL}/kickboard/admin/notice/notices`
         );
         if (response.data.success) {
           setNotices(response.data.data.map((item: any) => item.data));
