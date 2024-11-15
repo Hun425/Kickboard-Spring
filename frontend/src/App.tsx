@@ -34,6 +34,7 @@ import AccountSignUp from './pages/admin/AccountSignUp';
 import CompanyIdMagage from './pages/admin/CompanyIdManage';
 import AdminIdManage from './pages/admin/AdminIdManage';
 import ReportPage1 from './pages/user/ReportPage1';
+import ReportMapPage1 from './pages/user/ReportMapPage1';
 
 function App() {
   const isLoggedIn = useCollectorAuthStore((state) => state.isLoggedIn);
@@ -131,6 +132,18 @@ function App() {
               <Header />
               <MainContainer1>
                 <ReportMapPage />
+              </MainContainer1>
+            </PhoneScreenContainer>
+          }
+        />
+
+        <Route
+          path="/list/:id/map"
+          element={
+            <PhoneScreenContainer>
+              <Header />
+              <MainContainer1>
+                <ReportMapPage1 />
               </MainContainer1>
             </PhoneScreenContainer>
           }

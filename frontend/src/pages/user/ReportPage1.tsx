@@ -1,32 +1,53 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useStateStore } from '../../store/StateStore';
-import Address from '../../components/report/Address';
-import ViolationTypeSelector from '../../components/report/ViolationTypeSelector';
-import ReportContent from '../../components/report/ReportContent';
-import Serial from '../../components/report/Serial';
-import Company from '../../components/report/Company';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import axios from 'axios';
+import Company1 from '../../components/report/Company1';
+import Serial1 from '../../components/report/Serial1';
+import Address1 from '../../components/report/Address1';
+import ViolationTypeSelector1 from '../../components/report/ViolationTypeSelector1';
+import ReportContent1 from '../../components/report/ReportContent1';
+import { useReportStore } from '../../store/ReportInfoStore';
+
+interface ReportData {
+  address: string;
+  area: string;
+  category: string;
+  companyId: number;
+  createdAt: string;
+  descriptions: string;
+  images: string[];
+  latitude: number;
+  longitude: number;
+  reportId: number;
+  serialNumber: string;
+  status: string;
+}
 
 const ReportPage1: React.FC = () => {
   const { title, setTitle, setReportList } = useStateStore();
+  const { setLatitude1, setLongitude1, setAddress1 } = useReportStore();
+  const [responseData, setResponseData] = useState<ReportData>();
+  const { id } = useParams<{ id: string }>();
 
-  const response = [
-    {
-      reportId: 1,
-      companyId: 1,
-      serialNumber: '123456',
-      address: '북구 1번',
-      latitude: 35.2052295,
-      longitude: 126.8117828,
-      categoryId: 1,
-      status: 'REPORT_RECEIVED',
-      photos: { firstPhoto: '', secondPhoto: '' },
-      description: 'test',
-      createdAt: '2024-11-11 15:23:44',
-      area: '북구',
-    },
-  ];
-  response;
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const response = await axios.get(
+          import.meta.env.VITE_URL + `/kickboard/reports/${id}`
+        );
+        setResponseData(response.data.data);
+        setLatitude1(response.data.data.latitude);
+        setLongitude1(response.data.data.longitude);
+        setAddress1(response.data.data.address);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    // 선언한 async 함수 호출
+    fetchReports();
+  }, []);
 
   useEffect(() => {
     setTitle('전동 킥보드 주정차 위반 신고');
@@ -35,16 +56,17 @@ const ReportPage1: React.FC = () => {
 
   return (
     <>
-      <Company />
+      <div>{responseData?.createdAt}</div>
       <hr className="my-4" />
-      <Serial />
+      <Company1 companyId={responseData?.companyId ?? 0} />
       <hr className="my-4" />
-      <Address />
+      <Serial1 serialNumber={responseData?.serialNumber ?? ''} />
       <hr className="my-4" />
-      <ViolationTypeSelector />
+      <Address1 address={responseData?.address ?? ''} />
       <hr className="my-4" />
+      <ViolationTypeSelector1 category={responseData?.category ?? ''} />
       <hr className="my-4" />
-      <ReportContent />
+      <ReportContent1 descriptions={responseData?.descriptions ?? ''} />
       <Link to="/list" className="m-6 flex items-center justify-center">
         <button
           type="button"

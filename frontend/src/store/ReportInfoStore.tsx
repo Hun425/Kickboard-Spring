@@ -14,8 +14,17 @@ interface ReportState {
   longitude: number;
   setLongitude: (longitude: number) => void;
 
+  latitude1: number;
+  setLatitude1: (latitude1: number) => void;
+
+  longitude1: number;
+  setLongitude1: (longitude1: number) => void;
+
   address: string | null;
   setAddress: (address: string) => void;
+
+  address1: string | null;
+  setAddress1: (address1: string) => void;
 
   categoryId: number;
   setCategoryId: (categoryId: number) => void;
@@ -44,8 +53,17 @@ export const useReportStore = create<ReportState>()(
       longitude: 126.570667,
       setLongitude: (longitude) => set({ longitude }),
 
+      latitude1: 33.450701,
+      setLatitude1: (latitude1) => set({ latitude1 }),
+
+      longitude1: 126.570667,
+      setLongitude1: (longitude1) => set({ longitude1 }),
+
       address: null,
       setAddress: (address) => set({ address }),
+
+      address1: null,
+      setAddress1: (address1) => set({ address1 }),
 
       categoryId: 0,
       setCategoryId: (categoryId) => set({ categoryId }),
