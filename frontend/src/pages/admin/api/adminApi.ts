@@ -1,22 +1,40 @@
-import { ApiResponse } from '../../../types/index';
+import { ApiResponse } from "../../../types/index";
 
 const BASE_URL = import.meta.env.VITE_URL;
 
-export const fetchReports = async (area: string): Promise<ApiResponse> => {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/kickboard/admin/reports?area=${area}`
-    );
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('accessToken');
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  };
+};
 
+export const fetchReports = async (): Promise<ApiResponse> => {
+  try {
+    const area = localStorage.getItem('area');
+    if (!area) {
+      throw new Error('No area found in localStorage');
+    }
+
+    const response = await fetch(`${BASE_URL}/kickboard/admin/reports?area=${area}`, {
+      headers: getAuthHeaders()
+    });
+    
     if (!response.ok) {
+      if (response.status === 401) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('role');
+        localStorage.removeItem('area');
+        window.location.href = '/login';
+        throw new Error('Unauthorized access');
+      }
       const errorText = await response.text();
       console.error('API request failed:', errorText);
       throw new Error('API request failed');
     }
-
+    
     const data: ApiResponse = await response.json();
-    console.log(data);
-
     return data;
   } catch (error) {
     console.error('Error fetching reports:', error);
@@ -24,25 +42,22 @@ export const fetchReports = async (area: string): Promise<ApiResponse> => {
   }
 };
 
-export const updateReportStatus = async (
-  reportId: string,
-  status: string
-): Promise<ApiResponse> => {
-  console.log(reportId, status);
-
+export const updateReportStatus = async (reportId: string, status: string): Promise<ApiResponse> => {
   try {
-    const response = await fetch(
-      `${BASE_URL}/kickboard/admin/reports/${reportId}/status`,
-      {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status }),
-      }
-    );
+    const response = await fetch(`${BASE_URL}/kickboard/admin/reports/${reportId}/status`, {
+      method: 'PATCH',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ status }),
+    });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('role');
+        localStorage.removeItem('area');
+        window.location.href = '/login';
+        throw new Error('Unauthorized access');
+      }
       const errorText = await response.text();
       console.error('Status update failed:', errorText);
       throw new Error('Status update failed');
@@ -57,20 +72,20 @@ export const updateReportStatus = async (
 };
 
 export const postReport = async (reportId: string) => {
-  console.log(reportId);
-
   try {
-    const response = await fetch(
-      `${BASE_URL}/kickboard/collections/${reportId}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    const response = await fetch(`${BASE_URL}/kickboard/collections/${reportId}`, {
+      method: 'POST',
+      headers: getAuthHeaders()
+    });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('role');
+        localStorage.removeItem('area');
+        window.location.href = '/login';
+        throw new Error('Unauthorized access');
+      }
       const errorText = await response.text();
       console.error('Status update failed:', errorText);
       throw new Error('Status update failed');
@@ -83,6 +98,3 @@ export const postReport = async (reportId: string) => {
     throw error;
   }
 };
-
-export const areas = ['광산구', '동구', '북구', '남구', '서구'] as const;
-export type Area = (typeof areas)[number];

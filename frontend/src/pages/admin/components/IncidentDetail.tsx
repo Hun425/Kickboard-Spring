@@ -98,7 +98,7 @@ const IncidentDetails: React.FC<Props> = ({
       case 'COLLECT_PROGRESS':
       case 'COLLECT_COMPLETED':
         return (
-          <div className="justify-between">
+          <div className="flex justify-between gap-3">
             <Button
               onClick={() => handleStatusChange('COLLECT_PROGRESS')}
               className="w-24 bg-blue-500 text-white hover:bg-blue-600"
@@ -162,17 +162,16 @@ const IncidentDetails: React.FC<Props> = ({
 
   const getFormattedDate = (dateString: string) => {
     const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    };
-    return date.toLocaleString('ko-KR', options).replace(',', '');
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+  
+    return `${year}년 ${month}월 ${day}일 ${hours}시${minutes}분${seconds}초`;
   };
+  
 
   const details = [
     { label: '현재 상태', value: getStatusLabel(report.adminStatus) },

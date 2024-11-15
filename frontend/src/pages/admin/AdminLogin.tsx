@@ -6,6 +6,8 @@ const AdminLogin: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const BASE_URL = import.meta.env.VITE_API_URL;
+
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -15,7 +17,7 @@ const AdminLogin: React.FC = () => {
     const loginData = { email, password };
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_URL}/users/login`, {
+      const response = await fetch(`${BASE_URL}/users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(loginData),

@@ -81,7 +81,7 @@ const AdminMain: React.FC = () => {
     const loadReports = async () => {
       setIsLoading(true);
       try {
-        const response = await fetchReports('광산구');
+        const response = await fetchReports();
         if (response.success && response.data) {
           setReports(response.data.reports);
         } else {
@@ -190,6 +190,17 @@ const AdminMain: React.FC = () => {
     </th>
   );
 
+  const getFormattedDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+  
+    return `${month}월 ${day}일 ${hours}:${minutes}:${seconds}`;
+  };
+  
   return (
     <div className="w-full font-KoPubMedium">
       <AdminNavBar isLoading={isLoading} statusItems={statusItems} />
@@ -302,7 +313,7 @@ const AdminMain: React.FC = () => {
                                 : ''
                             }`}
                           >
-                            <td className="p-2">{report.createdAt}</td>
+                            <td className="p-2">{getFormattedDate(report.createdAt)}</td>
                             <td className="p-2">{report.companyName}</td>
                             <td className="p-2">{report.serialNumber}</td>
                             <td className="p-2">{report.address}</td>

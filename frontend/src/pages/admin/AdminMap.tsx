@@ -293,7 +293,7 @@ const AdminMap = () => {
     const loadReports = async () => {
       setIsLoading(true);
       try {
-        const response = await fetchReports('광산구');
+        const response = await fetchReports();
         if (response.success && response.data) {
           setReports(response.data.reports);
         } else {

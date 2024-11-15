@@ -7,7 +7,7 @@ interface Props {
   onSelectReport: (report: Report) => void;
 }
 
-const KakaoMap: React.FC<Props> = ({ reports, onSelectReport }) => {
+const KakaoMap: React.FC<Props> = ({ selectedReport, reports, onSelectReport }) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<any>(null);
   const [markers, setMarkers] = useState<any[]>([]);
@@ -15,7 +15,7 @@ const KakaoMap: React.FC<Props> = ({ reports, onSelectReport }) => {
   const [centerAddress, setCenterAddress] = useState<string>('');
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>(['전체']);
   const [overlays, setOverlays] = useState<any[]>([]);
-
+  const activeOverlayRef = useRef<any>(null);
   const KAKAO_MAP_KEY = import.meta.env.VITE_KAKAOMAP_API_KEY;
 
   const statusOptions = ['전체', '신고접수', '수거중', '수거완료'];
@@ -28,148 +28,214 @@ const KakaoMap: React.FC<Props> = ({ reports, onSelectReport }) => {
     씽씽: '#ffd939', // 씽씽
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusLabel = (status: Report['adminStatus']) => {
     switch (status) {
-      case '신고접수':
-        return { bg: '#FEE2E2', text: '#DC2626' };
-      case '수거중':
-        return { bg: '#E0F2FE', text: '#0284C7' };
-      case '수거완료':
-        return { bg: '#DCFCE7', text: '#16A34A' };
+      case 'REPORT_RECEIVED':
+        return '신고접수';
+      case 'COLLECT_RECEIVED':
+        return '수거접수';
+      case 'COLLECT_PROGRESS':
+        return '수거중';
+      case 'COLLECT_COMPLETED':
+        return '수거완료';
+      case 'REPORT_COMPLETED':
+        return '신고처리완료';
       default:
-        return { bg: '#F3F4F6', text: '#374151' };
+        return status;
     }
   };
+  // 지도 이동 함수 추가
+  const moveToLocation = (lat: number, lng: number) => {
+    if (!map) return;
+    
+    const moveLatLng = new window.kakao.maps.LatLng(lat, lng);
+    map.panTo(moveLatLng);
+  };
+
+  // 오버레이 표시 함수
+  const showOverlay = (overlay: any, _marker: any) => {
+    // 이전 활성 오버레이가 있다면 제거
+    if (activeOverlayRef.current) {
+      activeOverlayRef.current.setMap(null);
+    }
+    
+    overlay.setMap(map);
+    activeOverlayRef.current = overlay;
+  };
+
+  // selectedReport 변경 감지하여 지도 이동
+  useEffect(() => {
+    if (selectedReport && map) {
+      moveToLocation(selectedReport.latitude, selectedReport.longitude);
+      
+      // 해당 리포트의 오버레이 찾기 및 표시
+      // const reportIndex = reports.findIndex(r => r.reportId === selectedReport.reportId);
+      // if (reportIndex !== -1 && overlays[reportIndex]) {
+      //   showOverlay(overlays[reportIndex], markers[reportIndex]);
+      // }
+    }
+  }, [selectedReport, map]);
+  const getFormattedDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+  
+    return `${month}월 ${day}일 ${hours}:${minutes}:${seconds}`;
+  };
+  
+  useEffect(() => {
+    if (!map) return;
+
+    markers.forEach((marker) => marker.setMap(null));
+    infowindows.forEach((infowindow) => infowindow.close());
+    overlays.forEach((overlay) => overlay.setMap(null));
+
+    const filteredReports = getFilteredReports();
+    const newMarkers: any[] = [];
+    const newInfowindows: any[] = [];
+    const newOverlays: any[] = [];
+
+    filteredReports.forEach((report) => {
+      const position = new window.kakao.maps.LatLng(
+        report.latitude,
+        report.longitude
+      );
+
+      const markerImage = new window.kakao.maps.MarkerImage(
+        createMarkerImage(
+          companyColors[report.companyName] || '#FF0000',
+          report.adminStatus
+        ).src,
+        new window.kakao.maps.Size(24, 35)
+      );
+
+      const marker = new window.kakao.maps.Marker({
+        position,
+        map,
+        image: markerImage,
+      });
+
+      const overlay = new window.kakao.maps.CustomOverlay({
+        content: createCustomOverlayContent(report),
+        position: position,
+        xAnchor: 0.5,
+        yAnchor: 1,
+      });
+
+      // 마커 클릭 이벤트 수정
+      window.kakao.maps.event.addListener(marker, 'click', () => {
+        onSelectReport(report);
+        showOverlay(overlay, marker);
+      });
+
+      newMarkers.push(marker);
+      newInfowindows.push(infowindows);
+      newOverlays.push(overlay);
+    });
+
+    setMarkers(newMarkers);
+    setInfowindows(newInfowindows);
+    setOverlays(newOverlays);
+    
+    // 초기 선택된 리포트가 있다면 해당 위치로 이동
+    if (selectedReport) {
+      moveToLocation(selectedReport.latitude, selectedReport.longitude);
+    }
+  }, [map, reports, selectedStatuses]);
 
   const createCustomOverlayContent = (report: Report) => {
     const content = document.createElement('div');
     content.className = 'custom-overlay';
-    const statusColors = getStatusColor(report.adminStatus);
-
     content.innerHTML = `
-        <div class="overlay-wrapper" style="
-          position: relative;
-          width: 300px;
-          border-radius: 10px;
-          background-color: white;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-          padding: 15px;
-          font-family: system-ui, -apple-system, sans-serif;
-        ">
-          <div class="close-btn" style="
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            cursor: pointer;
-            font-size: 18px;
-            color: #666;
-            z-index: 10;
-            background: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 12px;
+      <div class="overlay-wrapper" style="
+        position: relative;
+        width: 300px;
+        border-radius: 10px;
+        background-color: white;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        padding: 15px;
+        font-family: system-ui, -apple-system, sans-serif;
+      ">
+        <div class="close-btn" style="
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          cursor: pointer;
+          font-size: 18px;
+          color: #666;
+        ">&times;</div>
+        
+ 
+        <div style="padding: 0 5px;">
+          <div style="
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-          ">&times;</div>
-          
-          <div class="image-container" style="
-            position: relative;
-            width: 100%;
-            height: 150px;
-            margin-bottom: 12px;
-            border-radius: 6px;
-            overflow: hidden;
+            margin-bottom: 8px;
           ">
-            ${report.images
-              .map(
-                (image, index) => `
-              <img 
-                src="${image}" 
-                alt="Report Image ${index + 1}"
-                style="
-                  width: 100%;
-                  height: 150px;
-                  object-fit: cover;
-                  display: ${index === 0 ? 'block' : 'none'};
-                "
-              />
-            `
-              )
-              .join('')}
-            ${
-              report.images.length > 1
-                ? `
-              <div style="
-                position: absolute;
-                bottom: 8px;
-                right: 8px;
-                background: rgba(0,0,0,0.6);
-                color: white;
-                padding: 4px 8px;
-                border-radius: 12px;
-                font-size: 12px;
-              ">
-                1/${report.images.length}
-              </div>
-            `
-                : ''
-            }
+            <span style="
+              font-weight: 600;
+              color: ${companyColors[report.companyName]};
+            ">${report.companyName}</span>
+            <span style="
+              color: #666;
+              font-size: 0.9em;
+            ">${getFormattedDate(report.createdAt)}</span>
           </div>
           
-          <div style="padding: 0 5px;">
-            <div style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              margin-bottom: 8px;
-            ">
-              <span style="
-                font-weight: 600;
-                color: ${companyColors[report.companyName]};
-              ">${report.companyName}</span>
-              <span style="
-                color: #666;
-                font-size: 0.9em;
-              ">${report.createdAt}</span>
-            </div>
-            
-            <div style="
-              margin-bottom: 12px;
-              color: #333;
-            ">
-              <div style="font-weight: 500; margin-bottom: 4px;">시리얼 번호</div>
-              <div style="color: #666; font-size: 0.95em;">${report.serialNumber}</div>
-            </div>
-            
-            <div style="
-              margin-bottom: 12px;
-              color: #333;
-            ">
-              <div style="font-weight: 500; margin-bottom: 4px;">주소</div>
-              <div style="color: #666; font-size: 0.95em;">${report.address}</div>
-            </div>
-            
+          <div style="margin-bottom: 8px;
+            color: #333;
+            font-size: 0.95em;
+          ">
+            <div style="color: #666;">${report.address}</div>
+          </div>
+          
+          <div style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          ">
             <div style="
               display: inline-block;
-              padding: 4px 12px;
-              border-radius: 16px;
-              background-color: ${statusColors.bg};
-              color: ${statusColors.text};
+              padding: 4px 8px;
+              border-radius: 4px;
+              background-color: ${
+                report.adminStatus === 'REPORT_RECEIVED'
+                  ? '#FEE2E2'
+                  : report.adminStatus === 'COLLECT_PROGRESS'
+                    ? '#E0F2FE'
+                    : '#DCFCE7'
+              };
+              color: ${
+                report.adminStatus === 'REPORT_RECEIVED'
+                  ? '#DC2626'
+                  : report.adminStatus === 'COLLECT_PROGRESS'
+                    ? '#0284C7'
+                    : '#16A34A'
+              };
               font-size: 0.9em;
               font-weight: 500;
-            ">${report.adminStatus}</div>
+            ">${getStatusLabel(report.adminStatus)}</div>
+            
+  
           </div>
         </div>
-      `;
+      </div>
+    `;
 
+    // 이벤트 리스너 추가
     const closeBtn = content.querySelector('.close-btn');
-    closeBtn?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      overlays.forEach((overlay) => overlay.setMap(null));
-    });
 
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        overlays.forEach((overlay) => overlay.setMap(null));
+      });
+    }
+
+ 
     return content;
   };
   const getStatusIcon = (status: string) => {
@@ -447,7 +513,7 @@ const KakaoMap: React.FC<Props> = ({ reports, onSelectReport }) => {
                 className="h-4 w-4 rounded-full"
                 style={{ backgroundColor: color }}
               />
-              <span className="text-sm text-gray-600">{company}</span>
+              <span className="text-xs">{company}</span>
             </div>
           ))}
         </div>
