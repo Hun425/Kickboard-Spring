@@ -255,11 +255,6 @@ const KakaoMap: React.FC<Props> = ({
             <circle cx="12" cy="12" r="8" fill="white"/>
             <path fill="black" d="M12 6a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm0 11a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm2.5-5.5l-3.5 2V8h1v4.3l2.5-1.7.5.9z"/>
           `;
-      case 'COLLECT_COMPLETED': // 수거완료
-        return `
-            <circle cx="12" cy="12" r="8" fill="white"/>
-            <path fill="black" d="M9.5 15.5l-4-4 1.4-1.4 2.6 2.6 5.6-5.6 1.4 1.4z"/>
-          `;
       case 'REPORT_COMPLETED': // 신고처리완료
         return `
             <circle cx="12" cy="12" r="8" fill="white"/>

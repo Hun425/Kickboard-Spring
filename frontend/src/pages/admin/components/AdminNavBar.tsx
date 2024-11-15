@@ -11,6 +11,7 @@ interface AdminNavBarProps {
   isLoading?: boolean;
   statusItems?: StatusItem[];
 }
+const area = localStorage.getItem('area');
 
 const AdminNavBar: React.FC<AdminNavBarProps> = ({
   isLoading = false,
@@ -77,7 +78,7 @@ const AdminNavBar: React.FC<AdminNavBarProps> = ({
                     </span>
                   </div>
                 ))}
-                <span className="text-xl font-semibold">관리자 님</span>
+                <span className="text-xl font-semibold">{area} 관리자</span>
               </>
             )}
           </div>

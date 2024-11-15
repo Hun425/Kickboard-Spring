@@ -64,11 +64,6 @@ const AdminMap = () => {
           <circle cx="12" cy="12" r="8" fill="white"/>
           <path fill="black" d="M12 6a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm0 11a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm2.5-5.5l-3.5 2V8h1v4.3l2.5-1.7.5.9z"/>
         `;
-      case 'COLLECT_COMPLETED': // 수거완료
-        return `
-          <circle cx="12" cy="12" r="8" fill="white"/>
-          <path fill="black" d="M9.5 15.5l-4-4 1.4-1.4 2.6 2.6 5.6-5.6 1.4 1.4z"/>
-        `;
       case 'REPORT_COMPLETED': // 신고처리완료
         return `
           <circle cx="12" cy="12" r="8" fill="white"/>
@@ -96,6 +91,16 @@ const AdminMap = () => {
       size: markerSize,
       shape: markerShape,
     };
+  };
+  const getFormattedDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    return `${month}월 ${day}일 ${hours}:${minutes}:${seconds}`;
   };
 
   const createCustomOverlayContent = (report: Report) => {
@@ -142,7 +147,7 @@ const AdminMap = () => {
             <span style="
               color: #666;
               font-size: 0.9em;
-            ">${report.createdAt}</span>
+            ">${getFormattedDate(report.createdAt)}</span>
           </div>
           
           <div style="margin-bottom: 8px;
@@ -322,35 +327,68 @@ const AdminMap = () => {
       window.kakao.maps.load(() => {
         if (!mapRef.current) return;
 
-        const options = {
-          center: new window.kakao.maps.LatLng(35.1595, 126.8526),
-          level: 3,
-        };
-
-        const newMap = new window.kakao.maps.Map(mapRef.current, options);
-
+        // 저장된 area 가져오기
+        const area = localStorage.getItem('area') || '';
         const geocoder = new window.kakao.maps.services.Geocoder();
-        const places = new window.kakao.maps.services.Places();
 
-        setGeocoder(geocoder);
-        setPlaces(places);
-        setMap(newMap);
+        // area를 포함한 주소로 초기 위치 설정
+        geocoder.addressSearch(
+          `광주광역시 ${area}`,
+          (result: any, status: any) => {
+            if (status === window.kakao.maps.services.Status.OK) {
+              const coords = new window.kakao.maps.LatLng(
+                result[0].y,
+                result[0].x
+              );
 
-        newMap.addListener('idle', () => {
-          const center = newMap.getCenter();
-          geocoder.coord2Address(
-            center.getLng(),
-            center.getLat(),
-            (
-              result: { address: { address_name: SetStateAction<string> } }[],
-              status: any
-            ) => {
-              if (status === window.kakao.maps.services.Status.OK) {
-                setCurrentAddress(result[0].address.address_name);
-              }
+              const options = {
+                center: coords,
+                level: 3,
+              };
+
+              const newMap = new window.kakao.maps.Map(mapRef.current, options);
+              const places = new window.kakao.maps.services.Places();
+
+              setGeocoder(geocoder);
+              setPlaces(places);
+              setMap(newMap);
+
+              newMap.addListener('idle', () => {
+                const center = newMap.getCenter();
+                geocoder.coord2Address(
+                  center.getLng(),
+                  center.getLat(),
+                  (
+                    result: {
+                      address: { address_name: SetStateAction<string> };
+                    }[],
+                    status: any
+                  ) => {
+                    if (status === window.kakao.maps.services.Status.OK) {
+                      setCurrentAddress(result[0].address.address_name);
+                    }
+                  }
+                );
+              });
+            } else {
+              // area 검색 실패시 기본 광주 중심으로 설정
+              const defaultOptions = {
+                center: new window.kakao.maps.LatLng(35.1595, 126.8526),
+                level: 3,
+              };
+
+              const newMap = new window.kakao.maps.Map(
+                mapRef.current,
+                defaultOptions
+              );
+              const places = new window.kakao.maps.services.Places();
+
+              setGeocoder(geocoder);
+              setPlaces(places);
+              setMap(newMap);
             }
-          );
-        });
+          }
+        );
       });
     };
 
@@ -492,47 +530,30 @@ const AdminMap = () => {
     <div className="flex min-h-screen flex-col font-KoPubMedium">
       <NavBar />
 
-      <div className="bg-transparent p-4">
-        <div className="mx-auto max-w-7xl space-y-4">
-          {/* Search Bar */}
-          <form onSubmit={handleSearch} className="relative">
-            <input
-              type="text"
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              placeholder={currentAddress || '주소나 키워드를 입력하세요'}
-              className="w-full rounded-lg border px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button
-              type="submit"
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-            >
-              <Search size={20} />
-            </button>
-          </form>
-
-          <div className="flex flex-wrap items-start gap-8">
-            {/* Status Filter */}
-            <div className="flex-1">
-              <div className="flex flex-wrap gap-2">
-                {statusOptions.map((status) => (
-                  <button
-                    key={status}
-                    onClick={() => handleStatusToggle(status)}
-                    className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                      selectedStatuses.includes(status)
-                        ? 'bg-blue-500 text-white'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    {status}
-                  </button>
-                ))}
-              </div>
-            </div>
+      {/* Map Container */}
+      <div className="relative flex-1">
+        <div ref={mapRef} className="absolute inset-0 h-full w-full" />
+        <div className="absolute z-10 p-4">
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-11 space-y-4">
+            {/* Search Bar */}
+            <form onSubmit={handleSearch} className="relative">
+              <input
+                type="text"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                placeholder={currentAddress || '주소나 키워드를 입력하세요'}
+                className="w-full rounded-lg border px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                type="submit"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <Search size={20} />
+              </button>
+            </form>
 
             {/* Company Legend */}
-            <div className="flex-1">
+            <div className="flex-2 bg-white p-4">
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
                 {Object.entries(companyColors).map(([company, color]) => (
                   <div key={company} className="flex items-center gap-2">
@@ -547,13 +568,28 @@ const AdminMap = () => {
                 ))}
               </div>
             </div>
+            <div className="flex flex-wrap items-start gap-8">
+              {/* Status Filter */}
+              <div className="flex-1">
+                <div className="flex flex-wrap gap-2">
+                  {statusOptions.map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => handleStatusToggle(status)}
+                      className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                        selectedStatuses.includes(status)
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-white text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      {status}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Map Container */}
-      <div className="relative flex-1">
-        <div ref={mapRef} className="absolute inset-0 h-full w-full" />
       </div>
 
       {/* Modal */}
