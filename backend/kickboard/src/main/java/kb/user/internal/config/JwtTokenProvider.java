@@ -31,6 +31,7 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims().setSubject(user.getEmail());
         claims.put("role", user.getRole().name());
         claims.put("locationId", user.getLocation().getLocationId());
+        claims.put("locationName", user.getLocation().getName());
         claims.put("userId", user.getUserId());  // userId 추가
         Date now = new Date();
 
@@ -77,6 +78,7 @@ public class JwtTokenProvider {
                     .name(locationName)
                     .build();
         }
+
 
         return new UserPrincipal(userId, email, role, location);
     }

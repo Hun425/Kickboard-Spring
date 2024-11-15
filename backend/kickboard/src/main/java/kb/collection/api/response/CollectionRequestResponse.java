@@ -2,6 +2,7 @@ package kb.collection.api.response;
 
 import kb.collection.internal.domain.CollectionRequest;
 import kb.collection.internal.domain.CollectionStatus;
+import kb.report.internal.domain.Report;
 
 import java.time.LocalDateTime;
 /**
@@ -13,7 +14,9 @@ public record CollectionRequestResponse(
         Long requestId,
         Long reportId,
         CollectionStatus status,
-        String photoUrl,
+        Double latitude,
+        Double longitude,
+        String category,
         LocalDateTime requestCreatedAt,
         LocalDateTime completedUpdateAt
 ) {
@@ -22,7 +25,9 @@ public record CollectionRequestResponse(
                 request.getRequestId(),
                 request.getReport().getReportId(),
                 request.getStatus(),
-                request.getPhotoUrl(),
+                request.getReport().getLatitude(),
+                request.getReport().getLongitude(),
+                request.getReport().getCategory().getName(),
                 request.getRequestedCreatedAt(),
                 request.getCompletedUpdatedAt()
         );

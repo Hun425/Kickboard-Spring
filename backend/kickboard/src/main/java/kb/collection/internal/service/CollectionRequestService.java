@@ -40,18 +40,12 @@ public class CollectionRequestService {
     private final FileService fileService;  // 파일 업로드 서비스
     private final UserRepository userRepository;
     @Transactional
-    public CollectionRequestResponse createRequest(Long requestId,CollectionRequestCreateRequest request) {
+    public CollectionRequestResponse createRequest(Long requestId) {
         Report report = reportRepository.findById(requestId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 신고입니다."));
 
-        String photoUrl = null;
-        if (request.photo() != null) {
-            photoUrl = fileService.uploadFile(request.photo());
-        }
-
         CollectionRequest collectionRequest = CollectionRequest.builder()
                 .report(report)
-                .photoUrl(photoUrl)
                 .build();
 
         report.updateStatus(ReportStatus.COLLECT_RECEIVED);
@@ -69,15 +63,9 @@ public class CollectionRequestService {
         CollectionRequest request = collectionRequestRepository.findByIdWithOptimisticLock(requestId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 수거 요청입니다."));
 
-        String photoUrl = null;
 
-        if(updateRequest.photo() != null) {
-        photoUrl = fileService.uploadFile(updateRequest.photo());
-
-        }
 
         request.updateCollectionStatus(updateRequest.collectionStatus());
-        request.updatePhotoUrl(photoUrl);
         request.updateCollectionProcessStatus(updateRequest.processStatus());
 
 
