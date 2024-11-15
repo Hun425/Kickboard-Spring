@@ -13,6 +13,7 @@ interface Notice {
 const AdminInfoPage: React.FC = () => {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [selectedNotice, setSelectedNotice] = useState<Notice | null>(null); // 선택된 공지사항 상태 추가
   const navigate = useNavigate();
 
   // API에서 공지사항을 가져오는 함수
@@ -48,6 +49,16 @@ const AdminInfoPage: React.FC = () => {
     navigate('/infowrite');
   };
 
+  // 공지사항 클릭 시 모달 열기
+  const handleRowClick = (notice: Notice) => {
+    setSelectedNotice(notice); // 선택된 공지사항을 모달에 전달
+  };
+
+  // 모달 닫기
+  const handleClosePopup = () => {
+    setSelectedNotice(null); // 선택된 공지사항을 null로 설정하여 모달 닫기
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-100">
       <NavBar />
@@ -68,23 +79,46 @@ const AdminInfoPage: React.FC = () => {
             등록된 공지사항이 없습니다.
           </div>
         ) : (
-          <div className="space-y-6">
-            {notices.map((notice) => (
-              <div
-                key={notice.id}
-                className="rounded-lg border bg-white p-6 shadow-md transition-shadow hover:shadow-lg"
-              >
-                <h2 className="text-black-600 text-2xl font-semibold">
-                  {notice.title}
-                </h2>
-                <p className="mt-4 whitespace-pre-line text-gray-700">
-                  {notice.content}
-                </p>
-              </div>
-            ))}
-          </div>
+          <table className="min-w-full table-auto border-collapse bg-white">
+            <thead className="bg-gray-700">
+              <tr>
+                <th className="px-4 py-2 border-b text-center text-white w-3/12">번호</th>
+                <th className="px-4 py-2 border-b text-center text-white w-9/12">제목</th>
+              </tr>
+            </thead>
+            <tbody>
+              {notices.map((notice, index) => (
+                <tr
+                  key={notice.id}
+                  className="border-b hover:bg-gray-100 cursor-pointer"
+                  onClick={() => handleRowClick(notice)} // 공지사항 클릭 시 모달 열기
+                >
+                  <td className="px-4 py-2 text-center text-gray-800">{index + 1}</td>
+                  <td className="px-4 py-2 text-center text-gray-800">{notice.title}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
       </div>
+
+      {/* Modal (Popup) for displaying the title and content */}
+      {selectedNotice && (
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg max-w-lg w-full h-auto max-h-[80%] overflow-y-auto">
+            <h2 className="text-xl font-bold mb-4">{selectedNotice.title}</h2>
+            <p className="text-gray-800 whitespace-pre-wrap break-words">{selectedNotice.content}</p>
+            <div className="flex justify-center mt-4">
+              <button
+                className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-all"
+                onClick={handleClosePopup} // 모달 닫기
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

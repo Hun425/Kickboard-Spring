@@ -118,9 +118,9 @@ function App() {
           element={
             <PhoneScreenContainer>
               <Header />
-              <MainContainer>
+              <MainContainer1>
                 <NoticePage />
-              </MainContainer>
+              </MainContainer1>
               <Navbar />
             </PhoneScreenContainer>
           }
