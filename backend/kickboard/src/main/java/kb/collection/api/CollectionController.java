@@ -33,24 +33,20 @@ public class CollectionController {
 
     @LocationAuth
     @Operation(summary = "수거 요청 생성")
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,value = "/{reportId}")
+    @PostMapping( "/{reportId}")
     public ResponseEntity<ApiResponse<CollectionRequestResponse>> createRequest(
             @PathVariable Long reportId,
-            @ModelAttribute CollectionRequestCreateRequest request,
             @AuthenticationPrincipal UserPrincipal user) {
         return ResponseEntity.ok(ApiResponse.success(
-                collectionRequestService.createRequest(reportId,request)));
+                collectionRequestService.createRequest(reportId)));
     }
 
     @LocationAuth
     @Operation(summary = "수거 요청 상태 업데이트")
-    @PatchMapping(
-            value = "/{requestId}",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
+    @PatchMapping("/{requestId}")
     public ResponseEntity<ApiResponse<CollectionRequestResponse>> updateStatus(
             @PathVariable Long requestId,
-            @ModelAttribute CollectionStatusUpdateRequest request,
+            CollectionStatusUpdateRequest request,
             @AuthenticationPrincipal UserPrincipal user) {
         return ResponseEntity.ok(ApiResponse.success(
                 collectionRequestService.updateStatus(requestId,request)));
