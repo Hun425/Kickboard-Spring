@@ -98,7 +98,7 @@ const AccountSignUp: React.FC = () => {
               onChange={handleChange}
               className="w-full rounded border p-2"
             >
-              <option value="GOVERNMENT_OFFICIAL">관리자</option>
+              {/* <option value="GOVERNMENT_OFFICIAL">관리자</option> */}
               <option value="COLLECTION_COMPANY">수거업체</option>
             </select>
           </div>
