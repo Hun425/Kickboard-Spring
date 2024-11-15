@@ -218,6 +218,9 @@ const AdminMain: React.FC = () => {
   const TableHeader: React.FC<{
     field: SortField;
     children: React.ReactNode;
+    // TODO : 지영 임시 수정
+    className?: string;
+    // ---------------
   }> = ({ field, children }) => (
     <th
       className="sticky top-0 z-10 cursor-pointer bg-gray-50 p-2 text-left transition-colors hover:bg-gray-100"

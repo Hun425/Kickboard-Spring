@@ -46,7 +46,9 @@ const AdminInfoPage: React.FC = () => {
         '불법으로 킥보드를 주차할 경우 최대 10만 원의 과태료가 부과될 수 있습니다. 꼭 주의해 주세요.',
     },
   ]);
-
+  // TODO : 지영 임시 수정
+  setNotices
+  // -----------------------
   const handleWriteNotice = () => {
     // 글쓰기 로직 추가
     console.log('글쓰기 버튼 클릭');

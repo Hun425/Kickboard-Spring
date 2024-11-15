@@ -2,8 +2,11 @@ spring:
   application:
     name: Kickboard
 
+  profiles:
+    active: secrets
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/kb
+    url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     hikari:
