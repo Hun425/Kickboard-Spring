@@ -36,11 +36,11 @@ public class LocationInitializer {
         log.info("초기 데이터 로딩");
 
         // 광주광역시 5개 구 초기 데이터 생성
-        locationRepository.save(Location.builder().locationId(1).name("동구").build());
-        locationRepository.save(Location.builder().locationId(2).name("서구").build());
-        locationRepository.save(Location.builder().locationId(3).name("남구").build());
-        locationRepository.save(Location.builder().locationId(4).name("북구").build());
-        locationRepository.save(Location.builder().locationId(5).name("광산구").build());
+        locationRepository.save(Location.builder().locationId((long)1).name("동구").build());
+        locationRepository.save(Location.builder().locationId((long)2).name("서구").build());
+        locationRepository.save(Location.builder().locationId((long)3).name("남구").build());
+        locationRepository.save(Location.builder().locationId((long)4).name("북구").build());
+        locationRepository.save(Location.builder().locationId((long)5).name("광산구").build());
 
         log.info("초기 데이터 생성 완료");
     }
