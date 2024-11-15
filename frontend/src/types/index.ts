@@ -1,3 +1,5 @@
+// types.ts
+
 export interface Location {
   latitude: number;
   longitude: number;
@@ -11,17 +13,18 @@ export interface Report {
   latitude: number;
   longitude: number;
   address: string;
-  adminStatus:
-    | '신고접수'
-    | '수거요청'
-    | '처리전'
-    | '처리중'
-    | '처리완료'
-    | '수거완료';
+  adminStatus: 
+    | "REPORT_RECEIVED"  // 신고접수
+    | "COLLECT_RECEIVED" // 수거접수
+    | "COLLECT_PROGRESS"  // 수거중
+    | "COLLECT_COMPLETED" // 수거완료
+    | "REPORT_COMPLETED"; // 신고처리완료
   images: string[];
+  afterImages: string[];
   createdAt: string;
   content?: string;
   category?: string;
+  description: string;
   details?: {
     state: string;
     reportDate: string;

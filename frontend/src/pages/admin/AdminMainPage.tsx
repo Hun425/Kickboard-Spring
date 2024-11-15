@@ -2,8 +2,6 @@ import React, { useState, useMemo, useEffect } from 'react';
 import AdminNavBar from './components/AdminNavBar';
 import { Card, CardContent } from './components/Card';
 import { TableSkeleton, Skeleton } from './components/Skeleton';
-import beam from './components/beam.png';
-
 import {
   TiArrowUnsorted,
   TiArrowSortedUp,
@@ -11,108 +9,88 @@ import {
 } from 'react-icons/ti';
 import KakaoMap from './components/KaKaoMap';
 import IncidentDetails from './components/IncidentDetail';
-import { Report, ApiResponse } from '../../types';
+import { Report } from '../../types/index';
 import IncidentImage from './components/IncidentImage';
+import { fetchReports } from './api/adminApi';
+
+// adminStatus 한글 변환을 위한 매핑 객체
+const statusMap: Record<string, string> = {
+  'REPORT_RECEIVED': '신고접수',
+  'COLLECT_RECEIVED': '수거접수',
+  'COLLECT_PROGRESS': '수거중',
+  'COLLECT_COMPLETED': '수거완료',
+  'REPORT_COMPLETED': '신고처리완료'
+};
 
 const AdminMain: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [sortField, setSortField] = useState<keyof Report | null>(null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(
-    null
-  );
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(null);
+  const [reports, setReports] = useState<Report[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  const statusItems = [
-    {
-      label: '신고접수',
-      count: 10,
-      colorClass: 'bg-red-500',
-      value: '신고접수',
-    },
-    {
-      label: '수거중',
-      count: 10,
-      colorClass: 'bg-yellow-500',
-      value: '수거중',
-    },
-    {
-      label: '수거완료',
-      count: 10,
-      colorClass: 'bg-green-500',
-      value: '수거완료',
-    },
-  ];
-
-  const companies = ['BEAM', 'DEER', 'SWING', 'KICK GOING', 'LIME'];
-  const addresses = [
-    '광주광역시 광산구 장덕동 1623-3',
-    '광주광역시 광산구 수완동 1089-1',
-    '광주광역시 광산구 신가동 992-1',
-    '광주광역시 광산구 운남동 785-1',
-    '광주광역시 광산구 첨단동 1223-3',
-    '광주광역시 광산구 우산동 1026-2',
-    '광주광역시 광산구 송정동 823-5',
-    '광주광역시 광산구 하남동 763-1',
-    '광주광역시 광산구 월곡동 552-4',
-    '광주광역시 광산구 소촌동 443-2',
-  ];
-
-  const generateSampleData = (): ApiResponse => {
-    const adminStatuses: Array<Report['adminStatus']> = [
-      '신고접수',
-      '수거중',
-      '수거완료',
-    ];
-
-    const reports: Report[] = Array.from({ length: 10 }, (_, index) => ({
-      reportId: `REP${String(index + 1).padStart(4, '0')}`,
-      companyName: companies[Math.floor(Math.random() * companies.length)],
-      serialNumber: `SN${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`,
-      latitude: 35.1595 + (Math.random() - 0.5) * 0.01,
-      longitude: 126.8526 + (Math.random() - 0.5) * 0.01,
-      address: addresses[index % addresses.length],
-      adminStatus:
-        adminStatuses[Math.floor(Math.random() * adminStatuses.length)],
-      images: [beam],
-      createdAt: new Date(
-        Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
-      )
-        .toISOString()
-        .replace('T', ' ')
-        .slice(0, 16),
-    }));
-
-    return {
-      success: true,
-      data: {
-        reports,
-      },
-      afterImages: reports
-        .filter((report) => report.adminStatus === '수거완료')
-        .map(
-          (report) =>
-            `/api/placeholder/400/320?text=Completed${report.reportId}`
-        ),
-      error: undefined,
+  const statusCounts = useMemo(() => {
+    const counts = {
+      '신고접수': 0,
+      '수거중': 0,
+      '신고처리완료': 0
     };
-  };
+    
+    reports.forEach(report => {
+      if (report.adminStatus === 'REPORT_RECEIVED') {
+        counts['신고접수']++;
+      } else if (report.adminStatus === 'REPORT_COMPLETED') {
+        counts['신고처리완료']++;
+      } else if (report.adminStatus.startsWith('COLLECT_')) {
+        counts['수거중']++;
+      }
+    });
+    
+    return counts;
+  }, [reports]);
 
-  const [apiData] = useState<ApiResponse>(generateSampleData());
+  const statusItems = useMemo(() => [
+    { label: '신고접수', count: statusCounts['신고접수'], colorClass: 'bg-red-500', value: 'REPORT_RECEIVED' },
+    { label: '수거중', count: statusCounts['수거중'], colorClass: 'bg-yellow-500', value: 'COLLECT_PROGRESS' },
+    { label: '처리완료', count: statusCounts['신고처리완료'], colorClass: 'bg-green-500', value: 'REPORT_COMPLETED' },
+  ], [statusCounts]);
+
+  useEffect(() => {
+    const loadReports = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetchReports('광산구');
+        if (response.success && response.data) {
+          setReports(response.data.reports);
+        } else {
+          setError(response.error?.message || '데이터를 불러오는데 실패했습니다.');
+        }
+      } catch (error) {
+        setError('데이터를 불러오는데 실패했습니다.');
+      } finally {
+        setIsLoading(false);  
+      }
+    };
+
+    loadReports();
+  }, []);
 
   const handleStatusChange = async (newStatus: Report['adminStatus']) => {
     if (!selectedReport) return;
 
     setIsLoading(true);
     try {
-      const updatedReports = apiData.data.reports.map((report) =>
+      // 여기에 상태 업데이트를 위한 API 호출을 추가할 수 있습니다.
+      const updatedReports = reports.map((report) =>
         report.reportId === selectedReport.reportId
           ? { ...report, adminStatus: newStatus }
           : report
       );
 
       setSelectedReport({ ...selectedReport, adminStatus: newStatus });
-      apiData.data.reports = updatedReports;
+      setReports(updatedReports);
     } catch (error) {
       console.error('상태 변경 중 오류 발생:', error);
     } finally {
@@ -147,28 +125,32 @@ const AdminMain: React.FC = () => {
   const sortedAndFilteredReports = useMemo(() => {
     let filtered =
       statusFilter === 'all'
-        ? apiData.data.reports
-        : apiData.data.reports.filter(
-            (report) => report.adminStatus === statusFilter
-          );
+        ? reports
+        : reports.filter((report) => report.adminStatus === statusFilter);
 
-    if (sortField && sortDirection) {
-      filtered = [...filtered].sort((a, b) => {
-        const aValue = a[sortField];
-        const bValue = b[sortField];
-        if (sortDirection === 'asc') {
-          return aValue > bValue ? 1 : -1;
-        } else {
-          return aValue < bValue ? 1 : -1;
+        if (sortField && sortDirection) {
+          filtered = [...filtered].sort((a, b) => {
+            const aValue = a[sortField];
+            const bValue = b[sortField];
+        
+            if (aValue === undefined && bValue === undefined) return 0; // 둘 다 undefined이면 순서 유지
+            if (aValue === undefined) return 1; // aValue가 undefined면 bValue가 앞에
+            if (bValue === undefined) return -1; // bValue가 undefined면 aValue가 앞에
+        
+            if (sortDirection === 'asc') {
+              return aValue > bValue ? 1 : -1;
+            } else {
+              return aValue < bValue ? 1 : -1;
+            }
+          });
         }
-      });
-    }
-
+        
     return filtered;
-  }, [apiData.data.reports, statusFilter, sortField, sortDirection]);
+  }, [reports, statusFilter, sortField, sortDirection]);
 
   const handleRowClick = (report: Report) => {
     setSelectedReport(report);
+    console.log(report);
   };
 
   const TableHeader: React.FC<{
@@ -186,17 +168,19 @@ const AdminMain: React.FC = () => {
     </th>
   );
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
-    <div className="w-full">
-      <AdminNavBar />
+    <div className="w-full font-KoPubMedium">
+      <AdminNavBar 
+        isLoading={isLoading}
+        statusItems={statusItems}
+      />
       <div className="mx-auto max-w-7xl p-4">
+        {error && (
+          <div className="mb-4 rounded-lg bg-red-100 p-4 text-red-700">
+            {error}
+          </div>
+        )}
+
         <div className="space-y-4">
           <div className="grid grid-cols-3 gap-4">
             <div className="rounded-lg bg-white p-4">
@@ -231,6 +215,7 @@ const AdminMain: React.FC = () => {
               />
             </div>
           </div>
+          
           <Card>
             <CardContent>
               <div className="mb-4">
@@ -302,7 +287,7 @@ const AdminMain: React.FC = () => {
                             <td className="p-2">{report.companyName}</td>
                             <td className="p-2">{report.serialNumber}</td>
                             <td className="p-2">{report.address}</td>
-                            <td className="p-2">{report.adminStatus}</td>
+                            <td className="p-2">{statusMap[report.adminStatus] || report.adminStatus}</td>
                           </tr>
                         ))
                       )}

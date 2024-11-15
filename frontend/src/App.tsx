@@ -4,7 +4,7 @@ import {
   Routes,
   Navigate,
 } from 'react-router-dom';
-
+import './index.css'; 
 // 핸드폰 사이즈 조절
 import PhoneScreenContainer from './components/phoneScreenContainer';
 
