@@ -13,31 +13,26 @@ const Navbar = () => {
   const store = useStateStore();
 
   return (
-    <>
-      <div className="sticky bottom-0 flex h-16 w-full items-center justify-evenly border border-black">
-        <Link
-          to="/"
-          className="flex flex-col items-center justify-center gap-1"
-        >
-          {store.isReport ? <ReportOnIcon /> : <ReportOffIcon />}
-          <p className="text-center text-xs">신고</p>
-        </Link>
-        <Link
-          to="/list"
-          className="flex flex-col items-center justify-center gap-1"
-        >
-          {store.isReportList ? <ReportListOnIcon /> : <ReportListOffIcon />}
-          <p className="text-center text-xs">목록</p>
-        </Link>
-        <Link
-          to="/notice"
-          className="flex flex-col items-center justify-center gap-1"
-        >
-          {store.isNotice ? <NoticeOnIcon /> : <NoticeOffIcon />}
-          <p className="text-center text-xs">공지</p>
-        </Link>
-      </div>
-    </>
+    <div className="flex h-16 w-full items-center justify-evenly border border-black">
+      <Link to="/" className="flex flex-col items-center justify-center gap-1">
+        {store.isReport ? <ReportOnIcon /> : <ReportOffIcon />}
+        <p className="text-center text-xs">신고</p>
+      </Link>
+      <Link
+        to="/list"
+        className="flex flex-col items-center justify-center gap-1"
+      >
+        {store.isReportList ? <ReportListOnIcon /> : <ReportListOffIcon />}
+        <p className="text-center text-xs">목록</p>
+      </Link>
+      <Link
+        to="/notice"
+        className="flex flex-col items-center justify-center gap-1"
+      >
+        {store.isNotice ? <NoticeOnIcon /> : <NoticeOffIcon />}
+        <p className="text-center text-xs">공지</p>
+      </Link>
+    </div>
   );
 };
 export default Navbar;

@@ -1,12 +1,12 @@
 import { Navigate } from 'react-router-dom';
-import { useCollectorAuthStore } from '../store/CollectorAuthStore';
+import { useAuthStore } from '../store/authStore';
 
 type ProtectedRouteProps = {
   children: JSX.Element;
 };
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const isLoggedIn = useCollectorAuthStore((state) => state.isLoggedIn);
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
   if (!isLoggedIn) {
     return <Navigate to="/collector-login" replace />;

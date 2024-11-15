@@ -2,7 +2,10 @@
 package kb.user.internal.config;
 
 import io.jsonwebtoken.*;
+import kb.user.internal.domain.Location;
 import kb.user.internal.domain.User;
+import kb.user.internal.domain.UserPrincipal;
+import kb.user.internal.domain.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,7 +31,7 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims().setSubject(user.getEmail());
         claims.put("role", user.getRole().name());
         claims.put("locationId", user.getLocation().getLocationId());
-
+        claims.put("userId", user.getUserId());  // userId 추가
         Date now = new Date();
 
         String accessToken = Jwts.builder()
@@ -56,6 +59,27 @@ public class JwtTokenProvider {
         return new JwtAuthentication(token, claims.getSubject(), authorities);
     }
 
+    public UserPrincipal getUserPrincipal(String token) {
+        Claims claims = parseClaims(token);
+
+        // 토큰에서 사용자 정보 추출
+        Long userId = claims.get("userId", Long.class);
+        String email = claims.getSubject();
+        UserRole role = UserRole.valueOf(claims.get("role", String.class));
+
+        // Location 정보 추출 (claims에 저장된 방식에 따라 수정 필요)
+        Long locationId = claims.get("locationId", Long.class);
+        String locationName = claims.get("locationName", String.class);
+        Location location = null;
+        if (locationId != null && locationName != null) {
+            location = Location.builder()
+                    .locationId(locationId)
+                    .name(locationName)
+                    .build();
+        }
+
+        return new UserPrincipal(userId, email, role, location);
+    }
 
 
     public boolean validateToken(String token) {

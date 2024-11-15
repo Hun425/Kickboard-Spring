@@ -19,13 +19,13 @@ public class Location {
     @Id
     @Column(name = "locationId")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int locationId;
+    private Long locationId;
 
     @Column(name = "locationName")
     private String name;  // 구역 정보
 
     @Builder
-    public Location(int locationId, String name) {
+    public Location(Long locationId, String name) {
         this.locationId = locationId;
         this.name = name;
     }

@@ -1,3 +1,6 @@
+// TODO : 지영 임시 수정 -> 주석처리
+// import React from 'react';
+// ----------------------
 import { Button } from './Button';
 import './header.css';
 

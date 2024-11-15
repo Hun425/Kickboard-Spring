@@ -5,13 +5,18 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kb.user.internal.config.JwtTokenProvider;
+import kb.user.internal.domain.UserPrincipal;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collections;
+
 /**
  * Jwt 인증 필터
  * @since JDK21
@@ -30,6 +35,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Authentication authentication = tokenProvider.getAuthentication(token);
             if (authentication instanceof JwtAuthentication) {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        }
+
+        if (StringUtils.hasText(token) && tokenProvider.validateToken(token)) {
+            UserPrincipal userPrincipal = tokenProvider.getUserPrincipal(token);
+
+            if (userPrincipal != null) {
+                Authentication authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                userPrincipal,
+                                null,
+                                Collections.singleton(new SimpleGrantedAuthority("ROLE_" + userPrincipal.role().name()))
+                        );
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
             }
         }
 

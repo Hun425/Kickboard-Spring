@@ -11,6 +11,9 @@ import kb.core.service.FileService;
 import kb.report.internal.domain.Report;
 import kb.report.internal.domain.ReportStatus;
 import kb.report.internal.repository.ReportRepository;
+import kb.user.internal.domain.User;
+import kb.user.internal.domain.UserRole;
+import kb.user.internal.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,7 +38,7 @@ public class CollectionRequestService {
     private final CollectionRequestRepository collectionRequestRepository;
     private final ReportRepository reportRepository;
     private final FileService fileService;  // 파일 업로드 서비스
-
+    private final UserRepository userRepository;
     @Transactional
     public CollectionRequestResponse createRequest(Long requestId,CollectionRequestCreateRequest request) {
         Report report = reportRepository.findById(requestId)
@@ -89,8 +93,28 @@ public class CollectionRequestService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 수거 요청입니다.")));
     }
 
+
     public List<CollectionRequestResponse> getRequestsByStatus(CollectionStatus status) {
         return collectionRequestRepository.findByStatus(status).stream()
+                .map(CollectionRequestResponse::from)
+                .toList();
+    }
+
+    public List<CollectionRequestResponse> getAllDistrictCollectionRequests(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        if (user.getRole() != UserRole.COLLECTION_COMPANY) {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
+
+        if (user.getLocation() == null) {
+            throw new IllegalStateException("사용자에게 할당된 구역이 없습니다.");
+        }
+
+        return collectionRequestRepository
+                .findAllByLocationId((long)user.getLocation().getLocationId())
+                .stream()
                 .map(CollectionRequestResponse::from)
                 .toList();
     }

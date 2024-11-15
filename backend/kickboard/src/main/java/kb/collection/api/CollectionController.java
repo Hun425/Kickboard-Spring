@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,13 +66,20 @@ public class CollectionController {
                 collectionRequestService.getRequest(requestId)));
     }
 
-    @LocationAuth
-    @Operation(summary = "상태별 수거 요청 목록 조회")
+
+
+    @Operation(summary = "담당 구역 전체 수거 요청 조회")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<CollectionRequestResponse>>> getRequestsByStatus(
-            @RequestParam CollectionStatus status,
-            @AuthenticationPrincipal UserPrincipal user) {
-        return ResponseEntity.ok(ApiResponse.success(
-                collectionRequestService.getRequestsByStatus(status)));
+    public ResponseEntity<ApiResponse<List<CollectionRequestResponse>>> getMyDistrictRequests(
+            @AuthenticationPrincipal UserPrincipal user
+    ) {
+        if (user == null) {
+            throw new IllegalStateException("인증 정보가 없습니다.");
+        }
+
+        List<CollectionRequestResponse> response = collectionRequestService
+                .getAllDistrictCollectionRequests(user.userId());  // userId 직접 사용
+
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }
