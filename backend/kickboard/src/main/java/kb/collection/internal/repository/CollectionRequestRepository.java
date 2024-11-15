@@ -23,5 +23,15 @@ public interface CollectionRequestRepository extends JpaRepository<CollectionReq
     @Query("select c from CollectionRequest c where c.requestId = :requestId")
     Optional<CollectionRequest> findByIdWithOptimisticLock(@Param("requestId") Long requestId);
 
+    @Query("SELECT cr FROM CollectionRequest cr " +
+            "JOIN FETCH cr.report r " +
+            "WHERE r.location.locationId = :locationId " +
+            "ORDER BY cr.requestedCreatedAt DESC")
+    List<CollectionRequest> findAllByLocationId(@Param("locationId") Long locationId);
+
+
+
+
+
     List<CollectionRequest> findByReportReportId(Long reportId);
 }
