@@ -84,10 +84,14 @@ public class ReportController {
     })
     @GetMapping("api/v1/kickboard/admin/reports")
     public ResponseEntity<?> adminGetReportsByArea(
-            @Parameter(description = "담당 구역", required = true) @RequestParam("area") String area, @AuthenticationPrincipal User user) {
+//            인증 일단 빼 놓음
+//            @Parameter(description = "담당 구역", required = true) @RequestParam("area") String area, @AuthenticationPrincipal User user) {
+            @Parameter(description = "담당 구역", required = true) @RequestParam("area") String area) {
 
         Map<String, List<AdminReportResponse>> reports = reportService.AdminGetReportsByArea(area);
         return ResponseEntity.ok(kb.core.dto.ApiResponse.success(reports));    }
+
+
 
     @Operation(summary = "관리자 신고 상세 조회", description = "serialNumber로 최신 신고를 조회합니다.")
     @ApiResponses({
