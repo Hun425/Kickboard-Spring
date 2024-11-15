@@ -9,7 +9,7 @@ const AccountSignUp: React.FC = () => {
     area: '' as LocationKey, // 지역
     email: '', // 이메일
     password: '', // 비밀번호
-    role: 'GOVERNMENT_OFFICIAL', // 기본값 설정
+    role: 'COLLECTION_COMPANY', // 기본값 설정
   });
   const [responseMessage, setResponseMessage] = useState('');
 
