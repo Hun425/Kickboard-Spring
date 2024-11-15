@@ -17,6 +17,7 @@ public record CollectionRequestResponse(
         Double latitude,
         Double longitude,
         String category,
+        String photoUrl,
         LocalDateTime requestCreatedAt,
         LocalDateTime completedUpdateAt
 ) {
@@ -28,6 +29,7 @@ public record CollectionRequestResponse(
                 request.getReport().getLatitude(),
                 request.getReport().getLongitude(),
                 request.getReport().getCategory().getName(),
+                request.getReport().getPhotoUrl(),
                 request.getRequestedCreatedAt(),
                 request.getCompletedUpdatedAt()
         );
