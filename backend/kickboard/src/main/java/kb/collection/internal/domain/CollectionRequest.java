@@ -29,8 +29,6 @@ public class CollectionRequest extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private CollectionStatus status;
 
-    private String photoUrl;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "processType")
     private CollectionProcessStatus processType;
@@ -45,10 +43,9 @@ public class CollectionRequest extends BaseEntity {
     private Long version;
 
     @Builder
-    public CollectionRequest(Report report, String photoUrl) {
+    public CollectionRequest(Report report) {
         this.report = report;
         this.status = CollectionStatus.COLLECT_RECEIVED;
-        this.photoUrl = photoUrl;
         this.requestedCreatedAt = LocalDateTime.now();
     }
 
@@ -65,7 +62,4 @@ public class CollectionRequest extends BaseEntity {
     }
 
 
-    public void updatePhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
-    }
 }
