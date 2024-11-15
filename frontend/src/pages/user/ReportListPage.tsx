@@ -8,6 +8,25 @@ const ReportListPage: React.FC = () => {
     setReportList();
   }, [title, setTitle]);
 
+<<<<<<< HEAD
+=======
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          import.meta.env.VITE_URL + '/kickboard/reports?area'
+        );
+        if (response) {
+          setResponseData(response.data.data);
+        }
+      } catch (error) {
+        console.error('Error submitting report:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+>>>>>>> frontend
   return (
     <>
       <div className="min-h-[calc(100vh-40px-65px)] overflow-y-auto">

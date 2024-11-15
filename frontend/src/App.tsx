@@ -4,8 +4,13 @@ import {
   Routes,
   Navigate,
 } from 'react-router-dom';
+<<<<<<< HEAD
 
 import { useAuthStore } from './store/authStore';
+=======
+import './index.css';
+// 핸드폰 사이즈 조절
+>>>>>>> frontend
 import PhoneScreenContainer from './components/phoneScreenContainer';
 import Login from './pages/collector/login';
 import CollectList from './pages/collector/collectList';
@@ -19,6 +24,19 @@ import AdminLoginPage from './pages/admin/AdminLogin';
 import ReportPage from './pages/user/ReportPage';
 import ReportListPage from './pages/user/ReportListPage';
 import NoticePage from './pages/user/NoticePage';
+<<<<<<< HEAD
+=======
+import MainContainer from './components/MainContainer';
+import ReportMapPage from './pages/user/ReportMapPage';
+import MainContainer1 from './components/MainContainer1';
+import InfoWritePage from './pages/admin/InfoWrite';
+import InfoEditPage from './pages/admin/InfoEdit';
+import AccountSignUp from './pages/admin/AccountSignUp';
+import CompanyIdMagage from './pages/admin/CompanyIdManage';
+import AdminIdManage from './pages/admin/AdminIdManage';
+import ReportPage1 from './pages/user/ReportPage1';
+import ReportMapPage1 from './pages/user/ReportMapPage1';
+>>>>>>> frontend
 
 function App() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
@@ -86,6 +104,33 @@ function App() {
             </PhoneScreenContainer>
           }
         />
+<<<<<<< HEAD
+=======
+
+        <Route
+          path="/map"
+          element={
+            <PhoneScreenContainer>
+              <Header />
+              <MainContainer1>
+                <ReportMapPage />
+              </MainContainer1>
+            </PhoneScreenContainer>
+          }
+        />
+
+        <Route
+          path="/list/:id/map"
+          element={
+            <PhoneScreenContainer>
+              <Header />
+              <MainContainer1>
+                <ReportMapPage1 />
+              </MainContainer1>
+            </PhoneScreenContainer>
+          }
+        />
+>>>>>>> frontend
         {/* 사용자 페이지 -------------------------------------*/}
         <Route path="/adminMainPage" element={<AdminMainPage />} />
         <Route path="/admininfo" element={<AdminInfoPage />} />

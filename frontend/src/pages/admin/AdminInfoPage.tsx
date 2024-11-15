@@ -8,6 +8,7 @@ interface Notice {
 }
 
 const AdminInfoPage: React.FC = () => {
+<<<<<<< HEAD
   const [notices, setNotices] = useState<Notice[]>([
     {
       id: 1,
@@ -49,11 +50,46 @@ const AdminInfoPage: React.FC = () => {
   // TODO : 지영 임시 수정
   setNotices
   // -----------------------
+=======
+  const [notices, setNotices] = useState<Notice[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchNotices = async () => {
+      try {
+        const url = `${import.meta.env.VITE_URL}/kickboard/admin/notice/notices`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        console.log(data); // 응답 데이터 로그 출력
+
+        if (data.success) {
+          setNotices(data.data); // data.data가 공지사항 배열입니다.
+        } else {
+          setError(data.error?.message || '알 수 없는 오류');
+        }
+      } catch (err) {
+        setError(
+          '데이터를 가져오는 중에 문제가 발생했습니다. 다시 시도해주세요.'
+        );
+        console.error('API 요청 에러:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNotices();
+  }, []);
+
+>>>>>>> frontend
   const handleWriteNotice = () => {
     // 글쓰기 로직 추가
     console.log('글쓰기 버튼 클릭');
   };
 
+<<<<<<< HEAD
   const handleViewNotice = (id: number) => {
     // 내용보기 로직 추가
     console.log(`내용보기 버튼 클릭: 공지사항 ID ${id}`);
@@ -63,6 +99,16 @@ const AdminInfoPage: React.FC = () => {
     // 수정하기 로직 추가
     console.log(`수정하기 버튼 클릭: 공지사항 ID ${id}`);
   };
+=======
+  // const handleViewNotice = (noticeId: number) => {
+  //   console.log(`내용보기 버튼 클릭: 공지사항 ID ${noticeId}`);
+  // };
+
+  // const handleEditNotice = (noticeId: number) => {
+  //   console.log(`수정하기 버튼 클릭: 공지사항 ID ${noticeId}`);
+  //   navigate('/infoedit');
+  // };
+>>>>>>> frontend
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-100">
@@ -89,6 +135,7 @@ const AdminInfoPage: React.FC = () => {
                   <h3 className="text-lg font-semibold">{notice.title}</h3>
                   <p className="text-gray-600">{notice.content}</p>
                   <div className="mt-2 flex justify-end space-x-2">
+<<<<<<< HEAD
                     <button
                       onClick={() => handleViewNotice(notice.id)}
                       className="rounded bg-blue-600 px-2 py-1 text-white hover:bg-blue-700"
@@ -97,10 +144,20 @@ const AdminInfoPage: React.FC = () => {
                     </button>
                     <button
                       onClick={() => handleEditNotice(notice.id)}
+=======
+                    {/* <button
+                      onClick={() => handleViewNotice(notice.noticeId)}
+                      className="rounded bg-blue-600 px-2 py-1 text-white hover:bg-blue-700"
+                    >
+                      내용보기
+                    </button> */}
+                    {/* <button
+                      onClick={() => handleEditNotice(notice.noticeId)}
+>>>>>>> frontend
                       className="rounded bg-yellow-600 px-2 py-1 text-white hover:bg-yellow-700"
                     >
                       수정하기
-                    </button>
+                    </button> */}
                   </div>
                 </li>
               ))}
