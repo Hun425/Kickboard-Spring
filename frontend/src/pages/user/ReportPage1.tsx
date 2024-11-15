@@ -8,6 +8,7 @@ import Address1 from '../../components/report/Address1';
 import ViolationTypeSelector1 from '../../components/report/ViolationTypeSelector1';
 import ReportContent1 from '../../components/report/ReportContent1';
 import { useReportStore } from '../../store/ReportInfoStore';
+import Photo1 from '../../components/report/Photo1';
 
 interface ReportData {
   address: string;
@@ -54,9 +55,35 @@ const ReportPage1: React.FC = () => {
     setReportList();
   }, [title, setTitle]);
 
+  const formattedDate = responseData?.createdAt
+    ? new Date(responseData.createdAt).toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : '';
+
+  const getStatus = (status: string): JSX.Element => {
+    return status === 'REPORT_COMPLETED' ? (
+      <div className="w-fit border border-green-300 bg-green-100 px-3 py-1 font-semibold text-green-700 backdrop:rounded-lg">
+        처리 완료
+      </div>
+    ) : (
+      <div className="w-fit rounded-lg border border-yellow-300 bg-yellow-100 px-3 py-1 font-semibold text-yellow-700">
+        처리 중
+      </div>
+    );
+  };
+
   return (
     <>
-      <div>{responseData?.createdAt}</div>
+      <p className="inline-block rounded-md px-4 py-2 text-lg font-semibold text-gray-800">
+        {formattedDate}
+      </p>
+      <hr className="my-4" />
+      {getStatus(responseData?.status ?? '')}
       <hr className="my-4" />
       <Company1 companyId={responseData?.companyId ?? 0} />
       <hr className="my-4" />
@@ -65,6 +92,8 @@ const ReportPage1: React.FC = () => {
       <Address1 address={responseData?.address ?? ''} />
       <hr className="my-4" />
       <ViolationTypeSelector1 category={responseData?.category ?? ''} />
+      <hr className="my-4" />
+      <Photo1 images={responseData?.images ?? []} />
       <hr className="my-4" />
       <ReportContent1 descriptions={responseData?.descriptions ?? ''} />
       <Link to="/list" className="m-6 flex items-center justify-center">
