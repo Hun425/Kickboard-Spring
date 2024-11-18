@@ -30,3 +30,7 @@
   font-weight: 700; /* Bold 폰트의 경우 */
   font-style: normal;
 }
+
+:root {
+  font-family: 'KoPubDotumMedium', sans-serif;
+}

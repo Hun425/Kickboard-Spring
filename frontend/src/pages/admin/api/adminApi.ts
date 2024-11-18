@@ -1,4 +1,3 @@
-// 킥보드 브레이커
 import { ApiResponse } from '../../../types/index';
 
 const BASE_URL = import.meta.env.VITE_URL;

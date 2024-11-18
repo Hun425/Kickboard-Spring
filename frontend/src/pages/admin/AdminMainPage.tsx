@@ -1,4 +1,3 @@
-// 킥보드 브레이커
 import React, { useState, useMemo, useEffect } from 'react';
 import AdminNavBar from './components/AdminNavBar';
 import { Card, CardContent } from './components/Card';
@@ -33,7 +32,37 @@ const AdminMain: React.FC = () => {
   );
   const [reports, setReports] = useState<Report[]>([]);
   const [error, setError] = useState<string | null>(null);
-
+  const statusStyles = {
+    REPORT_RECEIVED: {
+      bgClass: 'bg-red-100',
+      textClass: 'text-red-600'
+    },
+    COLLECT_RECEIVED: {
+      bgClass: 'bg-orange-100',
+      textClass: 'text-orange-600'
+    },
+    COLLECT_PROGRESS: {
+      bgClass: 'bg-blue-100',
+      textClass: 'text-blue-600'
+    },
+    COLLECT_COMPLETED: {
+      bgClass: 'bg-blue-100',
+      textClass: 'text-blue-600'
+    },
+    REPORT_COMPLETED: {
+      bgClass: 'bg-green-100',
+      textClass: 'text-green-600'
+    }
+  };
+  
+  // 회사별 색상 매핑
+  const companyColors: { [key: string]: string } = {
+    빔: '#7448ff',
+    디어: '#ffe301',
+    지쿠터: '#34d025',
+    타고가: '#f88379',
+    씽씽: '#ffd939',
+  };
   const statusCounts = useMemo(() => {
     const counts = {
       신고접수: 0,
@@ -118,12 +147,12 @@ const AdminMain: React.FC = () => {
     loadReports();
   }, []);
 
+
   const handleStatusChange = async (newStatus: Report['adminStatus']) => {
     if (!selectedReport) return;
 
     setIsLoading(true);
     try {
-      // 여기에 상태 업데이트를 위한 API 호출을 추가할 수 있습니다.
       const updatedReports = reports.map((report) =>
         report.reportId === selectedReport.reportId
           ? { ...report, adminStatus: newStatus }
@@ -191,7 +220,6 @@ const AdminMain: React.FC = () => {
 
   const handleRowClick = (report: Report) => {
     setSelectedReport(report);
-    console.log(report);
   };
 
   const TableHeader: React.FC<{
@@ -219,10 +247,23 @@ const AdminMain: React.FC = () => {
 
     return `${month}월 ${day}일 ${hours}:${minutes}:${seconds}`;
   };
-
+  const CompanyName: React.FC<{ name: string }> = ({ name }) => {
+    const baseCompanyName = Object.keys(companyColors).find(company => 
+      name.toLowerCase().includes(company.toLowerCase())
+    );
+    
+    return baseCompanyName ? (
+      <span style={{ color: companyColors[baseCompanyName] }} className="font-semibold">
+        {name}
+      </span>
+    ) : (
+      <span>{name}</span>
+    );
+  };
+  
   return (
     <div className="w-full font-KoPubMedium">
-      <AdminNavBar isLoading={isLoading} statusItems={statusItems} />
+      <AdminNavBar  />
       <div className="mx-auto max-w-7xl p-4">
         {error && (
           <div className="mb-4 rounded-lg bg-red-100 p-4 text-red-700">
@@ -315,37 +356,44 @@ const AdminMain: React.FC = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {isLoading ? (
-                        <tr>
-                          <td colSpan={5}>
-                            <TableSkeleton />
-                          </td>
-                        </tr>
-                      ) : (
-                        sortedAndFilteredReports.map((report) => (
-                          <tr
-                            key={report.reportId}
-                            onClick={() => handleRowClick(report)}
-                            className={`cursor-pointer border-t hover:bg-gray-50 ${
-                              selectedReport?.reportId === report.reportId
-                                ? 'bg-blue-50'
-                                : ''
-                            }`}
-                          >
-                            <td className="p-2">
-                              {getFormattedDate(report.createdAt)}
-                            </td>
-                            <td className="p-2">{report.companyName}</td>
-                            <td className="p-2">{report.serialNumber}</td>
-                            <td className="p-2">{report.address}</td>
-                            <td className="p-2">
-                              {statusMap[report.adminStatus] ||
-                                report.adminStatus}
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
+  {isLoading ? (
+    <tr>
+      <td colSpan={5}>
+        <TableSkeleton />
+      </td>
+    </tr>
+  ) : (
+    sortedAndFilteredReports.map((report) => {
+      const statusStyle = statusStyles[report.adminStatus];
+      
+      return (
+        <tr
+          key={report.reportId}
+          onClick={() => handleRowClick(report)}
+          className={`cursor-pointer border-t hover:bg-gray-50 ${
+            selectedReport?.reportId === report.reportId
+              ? 'bg-blue-50'
+              : ''
+          }`}
+        >
+          <td className="p-2">{getFormattedDate(report.createdAt)}</td>
+          <td className="p-2">
+            <CompanyName name={report.companyName} />
+          </td>
+          <td className="p-2">{report.serialNumber}</td>
+          <td className="p-2">{report.address}</td>
+          <td className="p-2">
+            <span
+              className={`rounded-full px-2 py-1 ${statusStyle?.bgClass} ${statusStyle?.textClass}`}
+            >
+              {statusMap[report.adminStatus] || report.adminStatus}
+            </span>
+          </td>
+        </tr>
+      );
+    })
+  )}
+</tbody>
                   </table>
                 </div>
               </div>
