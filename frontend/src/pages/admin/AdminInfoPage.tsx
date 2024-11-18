@@ -64,11 +64,11 @@ const AdminInfoPage: React.FC = () => {
       <NavBar />
 
       <div className="ml-72 mr-72 mt-16">
-        <h1 className="text-center text-2xl font-bold">공지사항</h1>
+        <h1 className="text-center text-3xl font-bold">공지사항</h1>
         <div className="mb-4 flex justify-end">
           <button
             onClick={handleWriteNotice}
-            className="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700 focus:outline-none focus:ring focus:ring-green-300"
+            className="rounded bg-gray-700 px-4 py-2 text-white hover:bg-gray-700 focus:outline-none focus:ring focus:ring-green-300"
           >
             글쓰기
           </button>
@@ -129,6 +129,8 @@ const AdminInfoPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      <div className="h-[60px] bg-gray-100"></div>
     </div>
   );
 };
