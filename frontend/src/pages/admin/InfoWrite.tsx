@@ -100,7 +100,7 @@ const InfoWrite: React.FC = () => {
           <div className="flex justify-end">
             <button
               type="submit"
-              className="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700 focus:outline-none focus:ring focus:ring-green-300"
+              className="rounded bg-gray-700 px-4 py-2 text-white hover:bg-gray-700 focus:outline-none focus:ring focus:ring-green-300"
             >
               등록
             </button>
