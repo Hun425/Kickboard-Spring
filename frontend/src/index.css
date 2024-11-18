@@ -1,3 +1,32 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.my-button {
+  @apply rounded-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50;
+}
+
+.my-border {
+  @apply rounded-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300;
+}
+
+@font-face {
+  font-family: 'KoPubDotumLight';
+  src: url('./fonts/KoPubDotum-Light.ttf') format('truetype');
+  font-weight: 300; /* Light 폰트의 경우 */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'KoPubDotumMedium';
+  src: url('./fonts/KoPubDotum-Medium.ttf') format('truetype');
+  font-weight: 500; /* Medium 폰트의 경우 */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'KoPubDotumBold';
+  src: url('./fonts/KoPubDotum-Bold.ttf') format('truetype');
+  font-weight: 700; /* Bold 폰트의 경우 */
+  font-style: normal;
+}

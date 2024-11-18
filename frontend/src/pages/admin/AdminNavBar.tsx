@@ -1,10 +1,11 @@
+// 킥보드 브레이커
 import React, { useState } from 'react';
 
 const AdminNavBar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="bg-gray-200 p-4 shadow-md">
+    <nav className="bg-gray-300 p-4">
       <div className="container mx-auto flex items-center justify-between">
         {/* Desktop Menu */}
         <div className="ml-10 hidden space-x-8 md:flex">
@@ -52,22 +53,37 @@ const AdminNavBar: React.FC = () => {
         </div>
 
         {/* Logo or Title */}
-        <div className="mr-10 text-xl font-semibold">관리자 님</div>
+        {/* font-semibold */}
+        <div className="mr-10 text-xl">
+          <a href="#">관리자님</a>
+        </div>
       </div>
 
       {/* Mobile Menu */}
       {isOpen && (
         <div className="mt-2 space-y-2 md:hidden">
-          <a href="#" className="block text-gray-700 hover:text-gray-900">
+          <a
+            href="/adminMainPage"
+            className="block text-gray-700 hover:text-gray-900"
+          >
             신고현황
           </a>
-          <a href="#" className="block text-gray-700 hover:text-gray-900">
+          <a
+            href="/adminmap"
+            className="block text-gray-700 hover:text-gray-900"
+          >
             지도
           </a>
-          <a href="#" className="block text-gray-700 hover:text-gray-900">
+          <a
+            href="/accountmanage"
+            className="block text-gray-700 hover:text-gray-900"
+          >
             계정관리
           </a>
-          <a href="#" className="block text-gray-700 hover:text-gray-900">
+          <a
+            href="/admininfo"
+            className="block text-gray-700 hover:text-gray-900"
+          >
             공지사항
           </a>
         </div>

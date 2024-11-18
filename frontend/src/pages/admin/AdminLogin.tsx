@@ -1,27 +1,71 @@
+// 킥보드 브레이커
 import React, { useState } from 'react';
-// import NavBar from './AdminNavBar';
+import { useNavigate } from 'react-router-dom';
 
 const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const BASE_URL = import.meta.env.VITE_API_URL;
 
-  const handleLogin = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // 로그인 처리 로직 추가
-    console.log('Email:', email);
-    console.log('Password:', password);
+    setIsLoading(true);
+
+    const loginData = { email, password };
+
+    try {
+      const response = await fetch(`${BASE_URL}/users/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(loginData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        localStorage.setItem('accessToken', data.data.accessToken);
+        localStorage.setItem('role', data.data.role);
+        localStorage.setItem('area', data.data.area);
+
+        // 로그인 성공 데이터 콘솔에 출력
+        console.log('로그인 성공 데이터:', data);
+
+        navigate('/adminMainPage');
+      } else {
+        setError(data.error?.message || '알 수 없는 오류 발생');
+      }
+    } catch (error: any) {
+      if (error instanceof TypeError) {
+        setError('네트워크 오류 발생');
+        console.log('네트워크 오류 발생:', error);
+      } else {
+        setError('알 수 없는 오류 발생');
+      }
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-100">
-      {/* NavBar Component */}
-      {/* <NavBar /> */}
       <div className="flex flex-1 items-center justify-center">
         <form
           onSubmit={handleLogin}
           className="w-96 rounded bg-white p-6 shadow-md"
         >
-          <h2 className="mb-6 text-center text-2xl font-bold">로그인</h2>
+          <h2 className="mb-6 text-center text-2xl font-bold">관리자 페이지</h2>
+
+          {error && (
+            <div className="mb-4 text-center text-red-500">
+              <p>{error}</p>
+            </div>
+          )}
+
           <div className="mb-4">
             <label
               htmlFor="email"
@@ -38,6 +82,7 @@ const AdminLogin: React.FC = () => {
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring focus:ring-blue-500"
             />
           </div>
+
           <div className="mb-6">
             <label
               htmlFor="password"
@@ -54,11 +99,13 @@ const AdminLogin: React.FC = () => {
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring focus:ring-blue-500"
             />
           </div>
+
           <button
             type="submit"
             className="w-full rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300"
+            disabled={isLoading}
           >
-            로그인
+            {isLoading ? '로그인 중...' : '로그인'}
           </button>
         </form>
       </div>

@@ -1,3 +1,4 @@
+// 킥보드 브레이커
 import RightArrowIcon from '../../assets/RightArrowIcon';
 import { useNavigate } from 'react-router-dom';
 import { useStateStore } from '../../store/StateStore';
@@ -12,14 +13,16 @@ const Header = () => {
 
   return (
     <>
-      <div className="relative flex h-10 w-full items-center justify-center border border-black">
-        <div
-          className="absolute left-4 flex h-8 w-8 items-center justify-center hover:cursor-pointer"
-          onClick={handleBackClick}
-        >
-          <RightArrowIcon />
+      <div className="sticky top-0">
+        <div className="relative flex h-10 w-full items-center justify-center border border-black">
+          <div
+            className="absolute left-4 flex h-8 w-8 items-center justify-center hover:cursor-pointer"
+            onClick={handleBackClick}
+          >
+            <RightArrowIcon />
+          </div>
+          <p className="font-bold">{title}</p>
         </div>
-        <p className="font-bold">{title}</p>
       </div>
     </>
   );

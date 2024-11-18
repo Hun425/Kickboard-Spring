@@ -13,6 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public record CollectionStatusUpdateRequest(
         @NotNull(message = "상태는 필수입니다.") CollectionStatus collectionStatus,
-        @NotNull(message = "처리상태는 필수입니다.") CollectionProcessStatus processStatus
+        CollectionProcessStatus processStatus
 
 ) {}
