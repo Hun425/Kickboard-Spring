@@ -19,4 +19,9 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
 
     @Query("SELECT r FROM Report r WHERE r.kickboard.serialNumber = :serialNumber ORDER BY r.createdAt DESC")
     List<Report> findByKickboardSerialNumberOrderByCreatedAtDesc(@Param("serialNumber") String serialNumber);
+
+    List<Report> findByLocationOrderByCreatedAtDesc(Location location);
+
+    @Query("SELECT r FROM Report r ORDER BY r.createdAt DESC")
+    List<Report> findAllOrderByCreatedAtDesc();
 }

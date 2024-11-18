@@ -1,4 +1,3 @@
-// 킥보드 브레이커
 import React, { useEffect, useState } from 'react';
 import { useStateStore } from '../../store/StateStore';
 import List from '../../components/report/List';

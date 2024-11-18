@@ -1,4 +1,3 @@
-// 킥보드 브레이커
 import { create } from 'zustand';
 
 type AuthState = {

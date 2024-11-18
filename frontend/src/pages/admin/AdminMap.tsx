@@ -1,4 +1,3 @@
-// 킥보드 브레이커
 import { SetStateAction, useEffect, useRef, useState } from 'react';
 import { Search } from 'lucide-react';
 import NavBar from './components/AdminNavBar';
