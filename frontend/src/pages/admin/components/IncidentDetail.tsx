@@ -88,7 +88,7 @@ const IncidentDetails: React.FC<Props> = ({
         return (
           <Button
             onClick={() => handleStatusChange('COLLECT_RECEIVED')}
-            className="w-24 bg-blue-500 text-white hover:bg-blue-600"
+            className="w-24 bg-orange-500 text-white hover:bg-blue-600"
             disabled={isUpdating}
           >
             {isUpdating ? '처리중...' : '수거접수'}
@@ -108,14 +108,14 @@ const IncidentDetails: React.FC<Props> = ({
             </Button>
             <Button
               onClick={() => handleStatusChange('COLLECT_COMPLETED')}
-              className="w-24 bg-blue-500 text-white hover:bg-blue-600"
+              className="w-24 bg-yellow-500 text-white hover:bg-blue-600"
               disabled={isUpdating}
             >
               {isUpdating ? '처리중...' : '수거완료'}
             </Button>
             <Button
               onClick={() => handleStatusChange('REPORT_COMPLETED')}
-              className="w-24 bg-blue-500 text-white hover:bg-blue-600"
+              className="w-24 bg-green-500 text-white hover:bg-blue-600"
               disabled={isUpdating}
             >
               {isUpdating ? '처리중...' : '처리완료'}
