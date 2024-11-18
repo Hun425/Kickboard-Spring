@@ -12,8 +12,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 공지사항 서비스
+ * 공지사항 Service
  * @since JDK21
+ * @author 정소영
  */
 @Service
 @RequiredArgsConstructor

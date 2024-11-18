@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 /**
  * 공지사항 Entity
  * @since JDK21
- * @author 지예찬
+ * @author 정소영
  */
 @Entity
 @Table(name = "notices")

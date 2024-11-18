@@ -4,6 +4,12 @@ import jakarta.validation.constraints.NotBlank;
 
 public class NoticeCreateRequest {
 
+    /**
+     * 공지사항 Request
+     * @since JDK21
+     * @author 정소영
+     */
+
     @NotBlank(message = "Title is required")
     private String title;
 

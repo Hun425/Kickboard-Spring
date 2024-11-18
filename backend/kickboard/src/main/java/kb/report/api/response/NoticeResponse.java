@@ -2,6 +2,12 @@ package kb.report.api.response;
 
 public class NoticeResponse {
 
+    /**
+     * 공지사항 Response
+     * @since JDK21
+     * @author 정소영
+     */
+
     // 공지사항 응답 객체
     public static class Response {
         private boolean success;
