@@ -17,6 +17,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 공지사항 Controller
+ * @since JDK21
+ * @author 정소영
+ */
+
 @RestController
 @RequiredArgsConstructor
 public class NoticeController {

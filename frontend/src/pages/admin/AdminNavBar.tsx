@@ -1,4 +1,3 @@
-// 킥보드 브레이커
 import React, { useState } from 'react';
 
 const AdminNavBar: React.FC = () => {
