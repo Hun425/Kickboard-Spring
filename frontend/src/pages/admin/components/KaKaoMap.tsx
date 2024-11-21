@@ -22,8 +22,6 @@ const KakaoMap: React.FC<Props> = ({
   const activeOverlayRef = useRef<any>(null);
   const KAKAO_MAP_KEY = import.meta.env.VITE_KAKAOMAP_API_KEY;
 
-  const statusOptions = ['전체', '신고접수', '수거중', '수거완료'];
-
   const companyColors: { [key: string]: string } = {
     빔: '#7448ff', // 빔
     디어: '#ffe301', // 디어
@@ -230,7 +228,6 @@ const KakaoMap: React.FC<Props> = ({
       </div>
     `;
 
-    // 이벤트 리스너 추가
     const closeBtn = content.querySelector('.close-btn');
 
     if (closeBtn) {
@@ -245,21 +242,21 @@ const KakaoMap: React.FC<Props> = ({
     switch (status) {
       case 'REPORT_RECEIVED': // 신고접수
         return `
-            <circle cx="12" cy="12" r="8" fill="white"/>
-            <path fill="black" d="M11 6h2v6h-2zM11 14h2v2h-2z"/>
-          `;
+          <circle cx="12" cy="12" r="8" fill="white" stroke="white" stroke-width="2"/>
+          <path fill="black" d="M11 6h2v6h-2zM11 14h2v2h-2z"/>
+        `;
       case 'COLLECT_RECEIVED': // 수거접수
       case 'COLLECT_PROGRESS': // 수거중
       case 'COLLECT_COMPLETED': // 수거완료
         return `
-            <circle cx="12" cy="12" r="8" fill="white"/>
-            <path fill="black" d="M12 6a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm0 11a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm2.5-5.5l-3.5 2V8h1v4.3l2.5-1.7.5.9z"/>
-          `;
+          <circle cx="12" cy="12" r="8" fill="white" stroke="white" stroke-width="2"/>
+          <path fill="black"  d="M12 6a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm0 11a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm2.5-5.5l-3.5 2V8h1v4.3l2.5-1.7.5.9z"/>
+        `;
       case 'REPORT_COMPLETED': // 신고처리완료
         return `
-            <circle cx="12" cy="12" r="8" fill="white"/>
-            <path fill="black" d="M12 6a6 6 0 1 0 0 12 6 6 0 0 0 0-12z"/>
-          `;
+        <circle cx="12" cy="12" r="8" fill="white" stroke="white" stroke-width="2"/>
+        <path fill="none" stroke="black" stroke-width="2" d="M8 12l2 2 4-4"/>
+        `;
       default:
         return '';
     }
@@ -358,22 +355,7 @@ const KakaoMap: React.FC<Props> = ({
             <div class="max-w-3xl mx-auto">
               <div class="flex flex-col space-y-3">
                 <div class="flex flex-wrap gap-2 justify-center">
-                  ${statusOptions
-                    .map(
-                      (status) => `
-                    <button
-                      class="filter-btn px-4 py-1.5 rounded-full text-sm transition-colors ${
-                        selectedStatuses.includes(status)
-                          ? 'bg-blue-500 text-white hover:bg-blue-600'
-                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                      }"
-                      data-status="${status}"
-                    >
-                      ${status}
-                    </button>
-                  `
-                    )
-                    .join('')}
+                
                 </div>
               
               </div>

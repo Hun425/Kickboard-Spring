@@ -9,6 +9,7 @@ import { Report } from '../../types/index';
 const AdminMap = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<any>(null);
+  const [clusterer, setClusterer] = useState<any>(null);
   const [markers, setMarkers] = useState<any[]>([]);
   const [overlays, setOverlays] = useState<any[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
@@ -23,7 +24,14 @@ const AdminMap = () => {
 
   const KAKAO_MAP_KEY = import.meta.env.VITE_KAKAOMAP_API_KEY;
 
-  const statusOptions = ['전체', '신고접수', '수거중', '수거완료'];
+  const statusOptions = [
+    { value: '전체', label: '전체' },
+    { value: 'REPORT_RECEIVED', label: '신고접수' },
+    { value: 'COLLECT_RECEIVED', label: '수거접수' },
+    { value: 'COLLECT_PROGRESS', label: '수거중' },
+    { value: 'COLLECT_COMPLETED', label: '수거완료' },
+    { value: 'REPORT_COMPLETED', label: '신고처리완료' },
+  ];
 
   const companyColors: { [key: string]: string } = {
     빔: '#7448ff', // 빔
@@ -53,20 +61,20 @@ const AdminMap = () => {
     switch (status) {
       case 'REPORT_RECEIVED': // 신고접수
         return `
-          <circle cx="12" cy="12" r="8" fill="white"/>
+          <circle cx="12" cy="12" r="8" fill="white" stroke="white" stroke-width="2"/>
           <path fill="black" d="M11 6h2v6h-2zM11 14h2v2h-2z"/>
         `;
       case 'COLLECT_RECEIVED': // 수거접수
       case 'COLLECT_PROGRESS': // 수거중
       case 'COLLECT_COMPLETED': // 수거완료
         return `
-          <circle cx="12" cy="12" r="8" fill="white"/>
-          <path fill="black" d="M12 6a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm0 11a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm2.5-5.5l-3.5 2V8h1v4.3l2.5-1.7.5.9z"/>
+          <circle cx="12" cy="12" r="8" fill="white" stroke="white" stroke-width="2"/>
+          <path fill="black"  d="M12 6a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm0 11a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm2.5-5.5l-3.5 2V8h1v4.3l2.5-1.7.5.9z"/>
         `;
       case 'REPORT_COMPLETED': // 신고처리완료
         return `
-          <circle cx="12" cy="12" r="8" fill="white"/>
-          <path fill="black" d="M12 6a6 6 0 1 0 0 12 6 6 0 0 0 0-12z"/>
+        <circle cx="12" cy="12" r="8" fill="white" stroke="white" stroke-width="2"/>
+        <path fill="none" stroke="black" stroke-width="2" d="M8 12l2 2 4-4"/>
         `;
       default:
         return '';
@@ -75,6 +83,7 @@ const AdminMap = () => {
 
   const createMarkerImage = (color: string, status: string) => {
     const markerSize = new window.kakao.maps.Size(24, 35);
+
     const markerShape = {
       coords: [12, 34, 1, 21, 1, 12, 6, 4, 18, 4, 23, 12, 23, 21, 12, 34],
       type: 'poly',
@@ -102,7 +111,10 @@ const AdminMap = () => {
     return `${month}월 ${day}일 ${hours}:${minutes}:${seconds}`;
   };
 
-  const createCustomOverlayContent = (report: Report) => {
+  const createCustomOverlayContent = (
+    report: Report,
+    openModal: (report: Report) => void
+  ) => {
     const content = document.createElement('div');
     content.className = 'custom-overlay';
     content.innerHTML = `
@@ -113,7 +125,7 @@ const AdminMap = () => {
         background-color: white;
         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         padding: 15px;
-        font-family: system-ui, -apple-system, sans-serif;
+        pointer-events: auto;
       ">
         <div class="close-btn" style="
           position: absolute;
@@ -149,10 +161,7 @@ const AdminMap = () => {
             ">${getFormattedDate(report.createdAt)}</span>
           </div>
           
-          <div style="margin-bottom: 8px;
-            color: #333;
-            font-size: 0.95em;
-          ">
+          <div style="margin-bottom: 8px; color: #333; font-size: 0.95em;">
             <div style="color: #666;">${report.address}</div>
           </div>
           
@@ -198,20 +207,19 @@ const AdminMap = () => {
       </div>
     `;
 
-    // 이벤트 리스너 추가
-    const closeBtn = content.querySelector('.close-btn');
     const detailsBtn = content.querySelector('.details-btn');
-
-    if (closeBtn) {
-      closeBtn.addEventListener('click', () => {
-        overlays.forEach((overlay) => overlay.setMap(null));
+    if (detailsBtn) {
+      detailsBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // 이벤트 전파 중단
+        openModal(report); // 모달 열기
       });
     }
 
-    if (detailsBtn) {
-      detailsBtn.addEventListener('click', () => {
-        setSelectedReport(report);
-        setIsModalOpen(true);
+    const closeBtn = content.querySelector('.close-btn');
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // 이벤트 전파 중단
       });
     }
 
@@ -319,18 +327,16 @@ const AdminMap = () => {
     }
 
     const script = document.createElement('script');
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_MAP_KEY}&libraries=services&autoload=false`;
+    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_MAP_KEY}&libraries=services,clusterer&autoload=false`;
     script.async = true;
 
     script.onload = () => {
       window.kakao.maps.load(() => {
         if (!mapRef.current) return;
 
-        // 저장된 area 가져오기
         const area = localStorage.getItem('area') || '';
         const geocoder = new window.kakao.maps.services.Geocoder();
 
-        // area를 포함한 주소로 초기 위치 설정
         geocoder.addressSearch(
           `광주광역시 ${area}`,
           (result: any, status: any) => {
@@ -348,9 +354,30 @@ const AdminMap = () => {
               const newMap = new window.kakao.maps.Map(mapRef.current, options);
               const places = new window.kakao.maps.services.Places();
 
+              // Initialize MarkerClusterer
+              const newClusterer = new window.kakao.maps.MarkerClusterer({
+                map: newMap,
+                averageCenter: true,
+                minLevel: 4,
+                disableClickZoom: true,
+                styles: [
+                  {
+                    width: '50px',
+                    height: '50px',
+                    background: 'rgba(255, 255, 255, .8)',
+                    borderRadius: '25px',
+                    color: '#000',
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    lineHeight: '50px',
+                  },
+                ],
+              });
+
               setGeocoder(geocoder);
               setPlaces(places);
               setMap(newMap);
+              setClusterer(newClusterer);
 
               newMap.addListener('idle', () => {
                 const center = newMap.getCenter();
@@ -370,7 +397,7 @@ const AdminMap = () => {
                 );
               });
             } else {
-              // area 검색 실패시 기본 광주 중심으로 설정
+              // Default to Gwangju center if area search fails
               const defaultOptions = {
                 center: new window.kakao.maps.LatLng(35.1595, 126.8526),
                 level: 3,
@@ -382,9 +409,29 @@ const AdminMap = () => {
               );
               const places = new window.kakao.maps.services.Places();
 
+              const newClusterer = new window.kakao.maps.MarkerClusterer({
+                map: newMap,
+                averageCenter: true,
+                minLevel: 4,
+                disableClickZoom: true,
+                styles: [
+                  {
+                    width: '50px',
+                    height: '50px',
+                    background: 'rgba(255, 255, 255, .8)',
+                    borderRadius: '25px',
+                    color: '#000',
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    lineHeight: '50px',
+                  },
+                ],
+              });
+
               setGeocoder(geocoder);
               setPlaces(places);
               setMap(newMap);
+              setClusterer(newClusterer);
             }
           }
         );
@@ -398,8 +445,9 @@ const AdminMap = () => {
   }, [KAKAO_MAP_KEY]);
 
   useEffect(() => {
-    if (!map) return;
+    if (!map || !clusterer) return;
 
+    clusterer.clear();
     markers.forEach((marker) => marker.setMap(null));
     overlays.forEach((overlay) => overlay.setMap(null));
 
@@ -423,36 +471,120 @@ const AdminMap = () => {
 
       const marker = new window.kakao.maps.Marker({
         position,
-        map,
         image: markerImage,
       });
 
       const overlay = new window.kakao.maps.CustomOverlay({
-        content: createCustomOverlayContent(report),
+        content: createCustomOverlayContent(report, () => {
+          setSelectedReport(report);
+          setIsModalOpen(true);
+        }),
         position: position,
         xAnchor: 0.5,
-        yAnchor: 1,
-        zIndex: 1,
+        yAnchor: 0.8,
+        zIndex: 3,
       });
 
       window.kakao.maps.event.addListener(marker, 'click', () => {
-        newOverlays.forEach((o) => o.setMap(null));
-        overlay.setMap(map);
-        setSelectedReport(report);
-        map.panTo(position);
+        newOverlays.forEach((o) => o.setMap(null)); // 기존 오버레이 닫기
+        overlay.setMap(map); // 선택한 오버레이 표시
+        map.panTo(position); // 마커 위치로 이동
       });
 
-      window.kakao.maps.event.addListener(map, 'click', () => {
-        overlay.setMap(null);
-      });
+      const addOverlayEventListeners = () => {
+        const overlayElement = overlay.getContent();
+        const closeBtn = overlayElement.querySelector('.close-btn');
+        const detailsBtn = overlayElement.querySelector('.details-btn');
+
+        if (closeBtn) {
+          closeBtn.addEventListener('click', () => {
+            overlay.setMap(null);
+          });
+        }
+
+        if (detailsBtn) {
+          detailsBtn.addEventListener('click', () => {
+            setSelectedReport(report);
+            setIsModalOpen(true);
+            overlay.setMap(null);
+          });
+        }
+      };
+
+      window.kakao.maps.event.addListener(
+        overlay,
+        'added',
+        addOverlayEventListeners
+      );
+
+      // // 지도 클릭 시 오버레이 닫기
+      // window.kakao.maps.event.addListener(map, 'click', () => {
+      //   overlay.setMap(null);
+      // });
 
       newMarkers.push(marker);
       newOverlays.push(overlay);
     });
 
+    // 클러스터러 스타일 설정
+    const clustererStyles = [
+      {
+        width: '40px',
+        height: '40px',
+        background: 'white',
+        color: 'black',
+        borderRadius: '20px',
+        textAlign: 'center',
+        fontWeight: 'bold',
+        lineHeight: '41px',
+        fontSize: '20px',
+        border: '3px solid black',
+        boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+      },
+      {
+        width: '50px',
+        height: '50px',
+        background: 'white',
+        color: 'black',
+        borderRadius: '25px',
+        textAlign: 'center',
+        fontWeight: 'bold',
+        lineHeight: '51px',
+        fontSize: '16px',
+        border: '2px solid #fff',
+        boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+      },
+      {
+        width: '60px',
+        height: '60px',
+        background: '#1E40AF',
+        color: '#fff',
+        borderRadius: '30px',
+        textAlign: 'center',
+        fontWeight: 'bold',
+        lineHeight: '61px',
+        fontSize: '18px',
+        border: '2px solid #fff',
+        boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+      },
+    ];
+
+    clusterer.setStyles(clustererStyles);
+    clusterer.addMarkers(newMarkers);
+
+    // 클러스터 클릭 이벤트
+    window.kakao.maps.event.addListener(
+      clusterer,
+      'clusterclick',
+      function (cluster: any) {
+        const level = map.getLevel() - 1;
+        map.setLevel(level, { anchor: cluster.getCenter() });
+      }
+    );
+
     setMarkers(newMarkers);
     setOverlays(newOverlays);
-  }, [map, reports, selectedStatuses]);
+  }, [map, clusterer, reports, selectedStatuses]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -552,7 +684,7 @@ const AdminMap = () => {
             </form>
 
             {/* Company Legend */}
-            <div className="flex-2 bg-white p-4">
+            <div className="flex-2 rounded-md bg-white p-4">
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
                 {Object.entries(companyColors).map(([company, color]) => (
                   <div key={company} className="flex items-center gap-2">
@@ -573,15 +705,15 @@ const AdminMap = () => {
                 <div className="flex flex-wrap gap-2">
                   {statusOptions.map((status) => (
                     <button
-                      key={status}
-                      onClick={() => handleStatusToggle(status)}
+                      key={status.value}
+                      onClick={() => handleStatusToggle(status.value)}
                       className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                        selectedStatuses.includes(status)
+                        selectedStatuses.includes(status.value)
                           ? 'bg-blue-500 text-white'
                           : 'bg-white text-gray-700 hover:bg-gray-100'
                       }`}
                     >
-                      {status}
+                      {status.label}
                     </button>
                   ))}
                 </div>
